@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nexa Ops — Agency Dashboard</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#08090a;--bg1:#0f1112;--bg2:#161819;--bg3:#1e2122;--border:#252829;--border2:#303435;--text:#e4e8e8;--text2:#8a9494;--text3:#505858;--amber:#f0a030;--green:#3dd68c;--red:#f05858;--blue:#60a8f0;--purple:#a880f0;--ff:'DM Sans',sans-serif;--fm:'DM Mono',monospace;--fd:'Syne',sans-serif;--r:8px;--r2:12px}
+html,body,#root{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+input,textarea,select{font-family:var(--ff);background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:var(--r);padding:7px 11px;font-size:13px;outline:none;width:100%;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--amber)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+select option{background:var(--bg2)}
+button{font-family:var(--ff);cursor:pointer;border:none;outline:none}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:var(--r);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap}
+.bp{background:var(--amber);color:#050505}.bp:hover{background:#ffb84d}
+.bs{background:var(--bg3);color:var(--text);border:1px solid var(--border)}.bs:hover{border-color:var(--border2)}
+.bg_{background:transparent;color:var(--text2)}.bg_:hover{background:var(--bg3);color:var(--text)}
+.bd{background:rgba(240,88,88,.08);color:var(--red);border:1px solid rgba(240,88,88,.2)}
+.bsm{padding:4px 10px;font-size:12px}
+.bic{padding:5px;border-radius:var(--r);background:transparent;color:var(--text2)}.bic:hover{background:var(--bg3);color:var(--text)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600;font-family:var(--fm)}
+.card{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r2)}
+.lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-family:var(--fm)}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:100px;font-size:11px;color:var(--text2);font-family:var(--fm)}
+.field{display:flex;flex-direction:column;gap:4px}.field label{font-size:12px;font-weight:500;color:var(--text2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.fade{animation:fadeUp .18s ease}
+</style>
+</head>
+<body><div id="root"></div>
+<script>
+const{createElement:h,useState,useEffect,useCallback,createContext,useContext,Fragment}=React;
+const render=ReactDOM.createRoot(document.getElementById('root')).render;
+
+// ── Storage (localStorage) ────────────────────────────────────────────────────
+const S={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+
+// ── Icons ─────────────────────────────────────────────────────────────────────
+const P={home:"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",globe:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-2 14.93A8 8 0 0 1 4.07 12H6a6 6 0 0 0 4 5.66zm4 0A6 6 0 0 0 18 12h1.93A8 8 0 0 1 14 16.93zM4.07 10A8 8 0 0 1 10 3.07V5a6 6 0 0 0-4 5H4.07zm9.93-6.93A8 8 0 0 1 19.93 10H18a6 6 0 0 0-4-5V3.07z",arr:"M5 12h14M12 5l7 7-7 7",users:"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",umb:"M23 12a11.05 11.05 0 0 0-22 0zm-5 7a3 3 0 0 1-6 0v-7",alert:"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01",plus:"M12 5v14M5 12h14",srch:"M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0",edit:"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z",trash:"M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",check:"M20 6L9 17l-5-5",x:"M18 6L6 18M6 6l12 12",chevR:"M9 18l6-6-6-6",zap:"M13 2L3 14h9l-1 8 10-12h-9l1-8z",eye:"M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",eyeOff:"M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22",out:"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",bar:"M18 20V10M12 20V4M6 20v-6",task:"M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",clk:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2"};
+const Ic=({n,s=15,...p})=>h('svg',{width:s,height:s,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"1.8",strokeLinecap:"round",strokeLinejoin:"round",...p},h('path',{d:P[n]||P.x}));
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+const uid=()=>Math.random().toString(36).slice(2,9);
+const fmt=n=>`$${Number(n||0).toLocaleString()}`;
+const fmtD=d=>d?new Date(d).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):"—";
+
+const U0=[
+  {id:"u1",name:"Sarah Al-Rashidi",email:"sarah@agency.com",pwd:"password123",role:"ADMIN",ini:"SA",clr:"#f0a030"},
+  {id:"u2",name:"Marcus Chen",email:"marcus@agency.com",pwd:"password123",role:"TEAM_LEAD",ini:"MC",clr:"#60a8f0"},
+  {id:"u3",name:"Priya Sharma",email:"priya@agency.com",pwd:"password123",role:"TEAM_LEAD",ini:"PS",clr:"#a880f0"},
+  {id:"u4",name:"James O'Brien",email:"james@agency.com",pwd:"password123",role:"DEVELOPER",ini:"JO",clr:"#3dd68c"},
+  {id:"u5",name:"Lena Müller",email:"lena@agency.com",pwd:"password123",role:"DEVELOPER",ini:"LM",clr:"#3dd68c"},
+  {id:"u6",name:"Kobe Nakamura",email:"kobe@agency.com",pwd:"password123",role:"DESIGNER",ini:"KN",clr:"#f06060"},
+];
+const A0=[
+  {id:"a1",name:"Nexus Fintech",pid:"HS-88741",url:"nexusfintech.com",sub:"ENTERPRISE",pri:"CRITICAL",amc:"ACTIVE",mrr:4500,status:"AT_RISK",owner:"u2",shadow:"u4",notes:"Legacy CRM integration issues ongoing.",created:"2024-01-15"},
+  {id:"a2",name:"GreenLeaf Organics",pid:"HS-55320",url:"greenleaf.com",sub:"PROFESSIONAL",pri:"HIGH",amc:"ACTIVE",mrr:2800,status:"HEALTHY",owner:"u3",shadow:"u5",notes:"Happy client, expansion planned Q2.",created:"2024-03-08"},
+  {id:"a3",name:"Skyline Property Group",pid:"HS-91045",url:"skylineproperties.com",sub:"ENTERPRISE",pri:"HIGH",amc:"RENEWAL_DUE",mrr:5200,status:"ONBOARDING",owner:"u2",shadow:"u4",notes:"New client, 6-month onboarding phase.",created:"2024-06-01"},
+  {id:"a4",name:"BrightMed Solutions",pid:"HS-23710",url:"brightmed.com",sub:"STARTER",pri:"MEDIUM",amc:"ACTIVE",mrr:1200,status:"HEALTHY",owner:"u3",shadow:"",notes:"Simple setup, minimal support.",created:"2023-11-20"},
+  {id:"a5",name:"Urban Mobility Co",pid:"HS-67892",url:"urbanmobility.io",sub:"PROFESSIONAL",pri:"LOW",amc:"INACTIVE",mrr:0,status:"CHURNED",owner:"u2",shadow:"",notes:"Paused — awaiting budget.",created:"2023-08-12"},
+  {id:"a6",name:"TechFlow Startup",pid:"HS-34521",url:"techflow.dev",sub:"STARTER",pri:"MEDIUM",amc:"ACTIVE",mrr:900,status:"HEALTHY",owner:"u3",shadow:"u6",notes:"Fast-growing, needs attention.",created:"2024-05-15"},
+];
+const H0=[
+  {id:"h1",acctId:"a1",status:"IN_PROGRESS",pct:65,from:"u2",to:"u4",reason:"Team restructure",notes:"API key expires March annually. Contact: David Wong.",due:"2025-03-01",created:"2025-01-10"},
+  {id:"h2",acctId:"a3",status:"NOT_STARTED",pct:0,from:"u2",to:"u5",reason:"Vacation coverage",notes:"Client: Jenny Walsh jenny@skyline.com",due:"2025-03-15",created:"2025-01-20"},
+];
+const T0=[
+  {id:"t1",acctId:"a1",title:"Fix lead score display bug",status:"IN_PROGRESS",pri:"HIGH",assignee:"u4",due:"2025-02-15"},
+  {id:"t2",acctId:"a1",title:"Update GDPR banner z-index",status:"TODO",pri:"MEDIUM",assignee:"u4",due:"2025-02-20"},
+  {id:"t3",acctId:"a2",title:"Q2 expansion planning call",status:"TODO",pri:"HIGH",assignee:"u3",due:"2025-03-01"},
+  {id:"t4",acctId:"a3",title:"Onboarding documentation",status:"IN_PROGRESS",pri:"HIGH",assignee:"u5",due:"2025-02-28"},
+  {id:"t5",acctId:"a4",title:"Monthly check-in call",status:"DONE",pri:"LOW",assignee:"u3",due:"2025-01-31"},
+];
+const V0=[{id:"v1",userId:"u2",start:"2025-03-10",end:"2025-03-21",cover:"u3",notes:"Full handover done for Nexus and Skyline."}];
+
+const SCFG={HEALTHY:{l:"Healthy",c:"#3dd68c"},AT_RISK:{l:"At Risk",c:"#f0a030"},ONBOARDING:{l:"Onboarding",c:"#60a8f0"},CHURNED:{l:"Churned",c:"#f05858"}};
+const PCFG={CRITICAL:{l:"Critical",c:"#f05858"},HIGH:{l:"High",c:"#f0a030"},MEDIUM:{l:"Medium",c:"#60a8f0"},LOW:{l:"Low",c:"#8a9494"}};
+const ACFG={ACTIVE:{l:"Active",c:"#3dd68c"},INACTIVE:{l:"Inactive",c:"#8a9494"},RENEWAL_DUE:{l:"Renewal Due",c:"#f0a030"}};
+const RCFG={ADMIN:{l:"Admin",c:"#f0a030"},TEAM_LEAD:{l:"Team Lead",c:"#60a8f0"},DEVELOPER:{l:"Developer",c:"#3dd68c"},DESIGNER:{l:"Designer",c:"#a880f0"}};
+const TCFG={TODO:{l:"To Do",c:"#8a9494"},IN_PROGRESS:{l:"In Progress",c:"#60a8f0"},DONE:{l:"Done",c:"#3dd68c"}};
+const HCFG={NOT_STARTED:{l:"Not Started",c:"#8a9494"},IN_PROGRESS:{l:"In Progress",c:"#60a8f0"},COMPLETED:{l:"Completed",c:"#3dd68c"}};
+
+// ── Context ───────────────────────────────────────────────────────────────────
+const Ctx=createContext(null);
+const useCtx=()=>useContext(Ctx);
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const Bdg=({t,cfg})=>{const c=cfg[t]||{l:t,c:"#8a9494"};return h('span',{className:"badge",style:{color:c.c,background:c.c+"18",border:`1px solid ${c.c}28`}},c.l)};
+const Av=({u,s=28})=>u?h('div',{style:{width:s,height:s,borderRadius:"50%",background:u.clr+"20",border:`1px solid ${u.clr}38`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:s*.34,fontWeight:700,color:u.clr,fontFamily:"var(--fm)",flexShrink:0}},u.ini):null;
+const Empty=({icon,title,msg,action})=>h('div',{style:{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"50px 24px",gap:10,color:"var(--text3)",textAlign:"center"}},h('div',{style:{width:44,height:44,borderRadius:"50%",background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",opacity:.6}},h(Ic,{n:icon,s:20})),h('div',null,h('div',{style:{fontWeight:600,color:"var(--text2)",marginBottom:3}},title),h('div',{style:{fontSize:13}},msg)),action);
+
+function Modal({title,onClose,children,wide}){
+  useEffect(()=>{const k=e=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[]);
+  return h('div',{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20,backdropFilter:"blur(3px)"},onClick:onClose},
+    h('div',{className:"card fade",style:{width:"100%",maxWidth:wide?700:500,maxHeight:"88vh",overflow:"auto"},onClick:e=>e.stopPropagation()},
+      h('div',{style:{padding:"18px 22px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"var(--bg1)",zIndex:1}},
+        h('h3',{style:{fontFamily:"var(--fd)",fontSize:15,fontWeight:700}},title),
+        h('button',{className:"bic",onClick:onClose},h(Ic,{n:"x",s:15}))),
+      h('div',{style:{padding:22}},children)));
+}
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+function Login({onLogin}){
+  const[email,setE]=useState("");const[pwd,setP]=useState("");const[show,setS]=useState(false);const[err,setErr]=useState("");const[loading,setL]=useState(false);
+  const{users}=useCtx();
+  const sub=e=>{e.preventDefault();setErr("");setL(true);setTimeout(()=>{const u=users.find(u=>u.email===email&&u.pwd===pwd);u?onLogin(u):setErr("Invalid email or password.");setL(false)},350)};
+  return h('div',{style:{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"var(--bg)",position:"relative",overflow:"hidden"}},
+    h('div',{style:{position:"absolute",inset:0,backgroundImage:"linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px)",backgroundSize:"44px 44px",opacity:.35}}),
+    h('div',{style:{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%,transparent 30%,var(--bg) 75%)"}}),
+    h('div',{className:"fade",style:{position:"relative",width:"100%",maxWidth:400}},
+      h('div',{style:{display:"flex",alignItems:"center",gap:10,marginBottom:36,justifyContent:"center"}},
+        h('div',{style:{width:34,height:34,borderRadius:9,background:"rgba(240,160,48,.12)",border:"1px solid rgba(240,160,48,.28)",display:"flex",alignItems:"center",justifyContent:"center"}},h(Ic,{n:"zap",s:17,style:{color:"var(--amber)"}})),
+        h('div',null,h('div',{style:{fontFamily:"var(--fd)",fontWeight:800,fontSize:17,letterSpacing:"-.02em"}},"Nexa Ops"),h('div',{style:{fontSize:10,color:"var(--text3)",fontFamily:"var(--fm)"}},"Agency Dashboard"))),
+      h('div',{className:"card",style:{padding:30}},
+        h('h2',{style:{fontFamily:"var(--fd)",fontSize:21,fontWeight:800,marginBottom:5}},"Sign in"),
+        h('p',{style:{color:"var(--text2)",fontSize:13,marginBottom:26}},"Access your agency operations hub"),
+        err&&h('div',{style:{background:"rgba(240,88,88,.08)",border:"1px solid rgba(240,88,88,.22)",borderRadius:8,padding:"9px 13px",fontSize:13,color:"var(--red)",marginBottom:18}},err),
+        h('form',{onSubmit:sub,style:{display:"flex",flexDirection:"column",gap:14}},
+          h('div',{className:"field"},h('label',null,"Email"),h('input',{type:"email",placeholder:"you@agency.com",value:email,onChange:e=>setE(e.target.value),required:true})),
+          h('div',{className:"field"},h('label',null,"Password"),
+            h('div',{style:{position:"relative"}},
+              h('input',{type:show?"text":"password",placeholder:"••••••••",value:pwd,onChange:e=>setP(e.target.value),required:true,style:{paddingRight:38}}),
+              h('button',{type:"button",onClick:()=>setS(!show),style:{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"var(--text3)",cursor:"pointer",padding:3}},h(Ic,{n:show?"eyeOff":"eye",s:14})))),
+          h('button',{type:"submit",className:"btn bp",disabled:loading,style:{width:"100%",justifyContent:"center",padding:"9px",fontSize:14,marginTop:2}},loading?"Signing in…":"Sign in →")),
+        h('div',{style:{marginTop:22,paddingTop:18,borderTop:"1px solid var(--border)"}},
+          h('div',{className:"lbl",style:{marginBottom:9}},"Demo accounts · password123"),
+          h('div',{style:{display:"flex",gap:7,flexWrap:"wrap"}},
+            [{l:"Admin",e:"sarah@agency.com"},{l:"Team Lead",e:"marcus@agency.com"},{l:"Developer",e:"james@agency.com"}].map(d=>
+              h('button',{key:d.e,className:"tag",style:{cursor:"pointer",fontSize:12},onClick:()=>{setE(d.e);setP("password123")}},d.l)))))));
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function Sidebar({view,setView,user,onLogout}){
+  const nav=[{id:"dash",l:"Dashboard",ic:"home",roles:["ADMIN","TEAM_LEAD","DEVELOPER","DESIGNER"]},{id:"accounts",l:"Accounts",ic:"globe",roles:["ADMIN","TEAM_LEAD","DEVELOPER","DESIGNER"]},{id:"handovers",l:"Handovers",ic:"arr",roles:["ADMIN","TEAM_LEAD","DEVELOPER","DESIGNER"]},{id:"tasks",l:"Tasks",ic:"task",roles:["ADMIN","TEAM_LEAD","DEVELOPER","DESIGNER"]},{id:"vacation",l:"Vacation Plans",ic:"umb",roles:["ADMIN","TEAM_LEAD"]},{id:"risks",l:"Risk Dashboard",ic:"alert",roles:["ADMIN"]},{id:"team",l:"Team",ic:"users",roles:["ADMIN","TEAM_LEAD"]}].filter(i=>i.roles.includes(user.role));
+  return h('aside',{style:{width:212,flexShrink:0,background:"var(--bg1)",borderRight:"1px solid var(--border)",display:"flex",flexDirection:"column",overflow:"hidden"}},
+    h('div',{style:{padding:"18px 16px 14px",borderBottom:"1px solid var(--border)"}},
+      h('div',{style:{display:"flex",alignItems:"center",gap:8}},
+        h('div',{style:{width:27,height:27,borderRadius:7,background:"rgba(240,160,48,.1)",border:"1px solid rgba(240,160,48,.25)",display:"flex",alignItems:"center",justifyContent:"center"}},h(Ic,{n:"zap",s:14,style:{color:"var(--amber)"}})),
+        h('div',null,h('div',{style:{fontFamily:"var(--fd)",fontWeight:800,fontSize:14,letterSpacing:"-.02em"}},"Nexa Ops"),h('div',{style:{fontSize:10,color:"var(--text3)",fontFamily:"var(--fm)"}},"Local · v2")))),
+    h('nav',{style:{flex:1,padding:"10px 8px",display:"flex",flexDirection:"column",gap:2,overflowY:"auto"}},
+      nav.map(item=>h('button',{key:item.id,onClick:()=>setView({page:item.id}),style:{display:"flex",alignItems:"center",gap:9,padding:"7px 9px",borderRadius:7,background:view.page===item.id?"rgba(240,160,48,.1)":"transparent",color:view.page===item.id?"var(--amber)":"var(--text2)",border:"none",cursor:"pointer",fontSize:13,fontWeight:500,width:"100%",textAlign:"left",transition:"all .15s"}},h(Ic,{n:item.ic,s:14}),item.l))),
+    h('div',{style:{padding:"10px 14px",borderTop:"1px solid var(--border)"}},
+      h('div',{style:{display:"flex",alignItems:"center",gap:9,marginBottom:9}},h(Av,{user,s:28}),h('div',{style:{flex:1,minWidth:0}},h('div',{style:{fontSize:13,fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},user.name),h(Bdg,{t:user.role,cfg:RCFG}))),
+      h('button',{className:"btn bg_ bsm",style:{width:"100%",justifyContent:"center",color:"var(--text3)"},onClick:onLogout},h(Ic,{n:"out",s:13}),"Sign out")));
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function Dash(){
+  const{accounts,tasks,users,session:u}=useCtx();
+  const myA=u.role==="ADMIN"?accounts:accounts.filter(a=>a.owner===u.id||a.shadow===u.id);
+  const myT=tasks.filter(t=>t.assignee===u.id&&t.status!=="DONE");
+  const mrr=accounts.filter(a=>a.status!=="CHURNED").reduce((s,a)=>s+Number(a.mrr),0);
+  const atR=accounts.filter(a=>a.status==="AT_RISK").length;
+  const stats=[{l:"Total MRR",v:fmt(mrr),ic:"bar",c:"#3dd68c"},{l:"Accounts",v:accounts.length,ic:"globe",c:"#60a8f0"},{l:"At Risk",v:atR,ic:"alert",c:"#f0a030",w:atR>0},{l:"Open Tasks",v:tasks.filter(t=>t.status!=="DONE").length,ic:"task",c:"#a880f0"}];
+  return h('div',{className:"fade",style:{padding:26,overflowY:"auto",height:"100%",display:"flex",flexDirection:"column",gap:22}},
+    h('div',null,h('h1',{style:{fontFamily:"var(--fd)",fontSize:21,fontWeight:800,marginBottom:3}},`Good morning, ${u.name.split(" ")[0]} 👋`),h('p',{style:{color:"var(--text2)",fontSize:13}},"Here's what's happening across your accounts today.")),
+    h('div',{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}},stats.map(s=>h('div',{key:s.l,className:"card",style:{padding:"16px 18px"}},h('div',{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}},h('span',{className:"lbl"},s.l),h('div',{style:{width:30,height:30,borderRadius:7,background:s.c+"18",display:"flex",alignItems:"center",justifyContent:"center"}},h(Ic,{n:s.ic,s:14,style:{color:s.c}}))),h('div',{style:{fontFamily:"var(--fd)",fontSize:26,fontWeight:800,color:s.w?"var(--amber)":"var(--text)"}},s.v)))),
+    h('div',{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:18}},
+      h('div',{className:"card",style:{overflow:"hidden"}},
+        h('div',{style:{padding:"14px 18px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}},h('span',{style:{fontWeight:700,fontSize:13}},"My Accounts"),h('span',{className:"tag"},myA.length)),
+        h('div',{style:{maxHeight:250,overflowY:"auto"}},
+          myA.length===0&&h(Empty,{icon:"globe",title:"No accounts",msg:"None assigned yet."}),
+          myA.slice(0,8).map(a=>h('div',{key:a.id,style:{padding:"10px 18px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10}},h('div',{style:{flex:1}},h('div',{style:{fontWeight:500,fontSize:13}},a.name),h('div',{style:{color:"var(--text3)",fontSize:11,fontFamily:"var(--fm)"}},a.pid)),h(Bdg,{t:a.status,cfg:SCFG}))))),
+      h('div',{className:"card",style:{overflow:"hidden"}},
+        h('div',{style:{padding:"14px 18px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}},h('span',{style:{fontWeight:700,fontSize:13}},"My Open Tasks"),h('span',{className:"tag"},myT.length)),
+        h('div',{style:{maxHeight:250,overflowY:"auto"}},
+          myT.length===0&&h(Empty,{icon:"check",title:"All clear!",msg:"No open tasks."}),
+          myT.map(t=>{const ac=accounts.find(a=>a.id===t.acctId);return h('div',{key:t.id,style:{padding:"10px 18px",borderBottom:"1px solid var(--border)",display:"flex",gap:10,alignItems:"flex-start"}},h('div',{style:{width:6,height:6,borderRadius:"50%",marginTop:5,background:PCFG[t.pri]?.c||"#888",flexShrink:0}}),h('div',{style:{flex:1}},h('div',{style:{fontSize:13,fontWeight:500}},t.title),h('div',{style:{color:"var(--text3)",fontSize:11}},`${ac?.name} · Due ${fmtD(t.due)}`)),h(Bdg,{t:t.status,cfg:TCFG}))}))));
+}
+
+// ── Accounts ──────────────────────────────────────────────────────────────────
+function Accounts({setView}){
+  const{accounts,users,session,setAccounts}=useCtx();
+  const[q,setQ]=useState("");const[sf,setSf]=useState("ALL");const[show,setShow]=useState(false);
+  const canE=["ADMIN","TEAM_LEAD"].includes(session.role);
+  const vis=(session.role==="ADMIN"?accounts:accounts.filter(a=>a.owner===session.id||a.shadow===session.id)).filter(a=>(!q||a.name.toLowerCase().includes(q.toLowerCase())||a.pid.toLowerCase().includes(q.toLowerCase()))&&(sf==="ALL"||a.status===sf));
+  return h('div',{style:{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}},
+    h('div',{style:{padding:"18px 26px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10}},
+      h('div',null,h('h1',{style:{fontFamily:"var(--fd)",fontSize:18,fontWeight:800}},"Accounts"),h('p',{style:{color:"var(--text2)",fontSize:12}},`${vis.length} accounts · ${fmt(vis.reduce((s,a)=>s+Number(a.mrr),0))}/mo MRR`)),
+      h('div',{style:{flex:1}}),
+      canE&&h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:13}),"New Account")),
+    h('div',{style:{padding:"10px 26px",borderBottom:"1px solid var(--border)",display:"flex",gap:9}},
+      h('div',{style:{position:"relative",flex:1}},h(Ic,{n:"srch",s:13,style:{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}),h('input',{placeholder:"Search…",value:q,onChange:e=>setQ(e.target.value),style:{paddingLeft:30}})),
+      h('select',{value:sf,onChange:e=>setSf(e.target.value),style:{width:"auto",minWidth:130}},h('option',{value:"ALL"},"All Status"),Object.entries(SCFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),
+    h('div',{style:{flex:1,overflowY:"auto"}},
+      vis.length===0&&h(Empty,{icon:"globe",title:"No accounts",msg:"Try adjusting filters."}),
+      h('table',{style:{width:"100%",borderCollapse:"collapse"}},
+        h('thead',null,h('tr',{style:{borderBottom:"1px solid var(--border)"}},...["Client","Portal ID","Status","Priority","AMC","MRR","Owner",""].map(hd=>h('th',{key:hd,style:{padding:"9px 14px",textAlign:"left",fontSize:10,fontWeight:600,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".05em",fontFamily:"var(--fm)",whiteSpace:"nowrap"}},hd)))),
+        h('tbody',null,...vis.map(a=>{const ow=users.find(u=>u.id===a.owner);return h('tr',{key:a.id,style:{borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"},onMouseEnter:e=>e.currentTarget.style.background="var(--bg2)",onMouseLeave:e=>e.currentTarget.style.background="transparent",onClick:()=>setView({page:"detail",id:a.id})},
+          h('td',{style:{padding:"11px 14px"}},h('div',{style:{fontWeight:600,fontSize:13}},a.name),h('div',{style:{color:"var(--text3)",fontSize:11,fontFamily:"var(--fm)"}},a.url)),
+          h('td',{style:{padding:"11px 14px",fontFamily:"var(--fm)",fontSize:12,color:"var(--text2)"}},a.pid),
+          h('td',{style:{padding:"11px 14px"}},h(Bdg,{t:a.status,cfg:SCFG})),
+          h('td',{style:{padding:"11px 14px"}},h('span',{style:{color:PCFG[a.pri]?.c,fontSize:12,fontWeight:600}},PCFG[a.pri]?.l)),
+          h('td',{style:{padding:"11px 14px"}},h(Bdg,{t:a.amc,cfg:ACFG})),
+          h('td',{style:{padding:"11px 14px",fontFamily:"var(--fm)",fontSize:13,fontWeight:700,color:"var(--green)"}},fmt(a.mrr)),
+          h('td',{style:{padding:"11px 14px"}},ow&&h('div',{style:{display:"flex",alignItems:"center",gap:6}},h(Av,{user:ow,s:22}),h('span',{style:{fontSize:12,color:"var(--text2)"}},ow.name.split(" ")[0]))),
+          h('td',{style:{padding:"11px 14px"}},h(Ic,{n:"chevR",s:14,style:{color:"var(--text3)"}})))}))),
+    show&&h(AcctForm,{onClose:()=>setShow(false)}));
+}
+
+// ── Account Detail ────────────────────────────────────────────────────────────
+function Detail({id,setView}){
+  const{accounts,users,tasks,handovers,session,setAccounts,setTasks}=useCtx();
+  const[showE,setSE]=useState(false);const[showT,setST]=useState(false);const[del,setDel]=useState(false);
+  const a=accounts.find(x=>x.id===id);
+  if(!a)return h('div',{style:{padding:40,color:"var(--text3)"}},"Account not found.");
+  const ow=users.find(u=>u.id===a.owner);const sh=users.find(u=>u.id===a.shadow);
+  const aT=tasks.filter(t=>t.acctId===id);const aH=handovers.find(hh=>hh.acctId===id);
+  const canE=session.role==="ADMIN"||(session.role==="TEAM_LEAD"&&a.owner===session.id);
+  const toggle=tid=>setTasks(p=>p.map(t=>t.id===tid?{...t,status:t.status==="DONE"?"TODO":"DONE"}:t));
+  const doD=()=>{setAccounts(p=>p.filter(x=>x.id!==id));setView({page:"accounts"})};
+  return h('div',{className:"fade",style:{height:"100%",overflowY:"auto"}},
+    h('div',{style:{padding:"18px 26px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"flex-start",gap:14}},
+      h('button',{className:"bic",onClick:()=>setView({page:"accounts"}),style:{marginTop:3}},h(Ic,{n:"chevR",s:15,style:{transform:"rotate(180deg)"}})),
+      h('div',{style:{flex:1}},h('div',{style:{display:"flex",alignItems:"center",gap:9,marginBottom:3}},h('h1',{style:{fontFamily:"var(--fd)",fontSize:19,fontWeight:800}},a.name),h(Bdg,{t:a.status,cfg:SCFG}),h(Bdg,{t:a.pri,cfg:PCFG})),h('div',{style:{color:"var(--text3)",fontSize:12,fontFamily:"var(--fm)"}},`${a.pid} · ${a.url}`)),
+      canE&&h('div',{style:{display:"flex",gap:7}},h('button',{className:"btn bs bsm",onClick:()=>setSE(true)},h(Ic,{n:"edit",s:12}),"Edit"),session.role==="ADMIN"&&h('button',{className:"btn bd bsm",onClick:()=>setDel(true)},h(Ic,{n:"trash",s:12})))),
+    h('div',{style:{padding:24,display:"grid",gridTemplateColumns:"1fr 1fr",gap:18}},
+      h('div',{className:"card",style:{padding:18}},
+        h('div',{style:{fontWeight:700,fontSize:13,marginBottom:14}},"Account Details"),
+        h('div',{className:"g2",style:{gap:12}},...[["Monthly Value",fmt(a.mrr)],["Subscription",a.sub],["AMC",h(Bdg,{t:a.amc,cfg:ACFG})],["Created",fmtD(a.created)]].map(([l,v])=>h('div',{key:l},h('div',{className:"lbl",style:{marginBottom:3}},l),h('div',{style:{fontWeight:500,fontSize:13}},v)))),
+        h('div',{style:{borderTop:"1px solid var(--border)",margin:"14px 0"}}),
+        h('div',{style:{fontWeight:700,fontSize:13,marginBottom:12}},"Team"),
+        h('div',{style:{display:"flex",flexDirection:"column",gap:8}},...[ow&&[ow,"Account Owner"],sh&&[sh,"Shadow / Backup"]].filter(Boolean).map(([u,role])=>h('div',{key:u.id,style:{display:"flex",alignItems:"center",gap:9}},h(Av,{user:u,s:30}),h('div',null,h('div',{style:{fontSize:13,fontWeight:600}},u.name),h('div',{style:{fontSize:11,color:"var(--text3)"}},role))))),
+        a.notes&&h(Fragment,null,h('div',{style:{borderTop:"1px solid var(--border)",margin:"14px 0"}}),h('div',{className:"lbl",style:{marginBottom:7}},"Notes"),h('div',{style:{fontSize:13,color:"var(--text2)",lineHeight:1.6,background:"var(--bg2)",borderRadius:7,padding:"9px 11px",border:"1px solid var(--border)"}},a.notes))),
+      h('div',{className:"card",style:{overflow:"hidden"}},
+        h('div',{style:{padding:"14px 18px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"space-between"}},h('span',{style:{fontWeight:700,fontSize:13}},"Tasks"),canE&&h('button',{className:"btn bp bsm",onClick:()=>setST(true)},h(Ic,{n:"plus",s:12}),"Add")),
+        aT.length===0&&h(Empty,{icon:"check",title:"No tasks",msg:"Add tasks to track work."}),
+        ...aT.map(t=>{const as=users.find(u=>u.id===t.assignee);return h('div',{key:t.id,style:{padding:"10px 18px",borderBottom:"1px solid var(--border)",display:"flex",gap:9,alignItems:"flex-start"}},
+          h('button',{onClick:()=>toggle(t.id),style:{width:18,height:18,borderRadius:4,border:`1.5px solid ${t.status==="DONE"?"var(--green)":"var(--border2)"}`,background:t.status==="DONE"?"rgba(61,214,140,.12)":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}},t.status==="DONE"&&h(Ic,{n:"check",s:10,style:{color:"var(--green)"}})),
+          h('div',{style:{flex:1}},h('div',{style:{fontSize:13,fontWeight:500,textDecoration:t.status==="DONE"?"line-through":"none",color:t.status==="DONE"?"var(--text3)":"var(--text)"}},t.title),h('div',{style:{display:"flex",gap:7,marginTop:2,alignItems:"center"}},h('span',{style:{fontSize:11,color:PCFG[t.pri]?.c}},PCFG[t.pri]?.l),h('span',{style:{color:"var(--text3)",fontSize:11}},`· ${fmtD(t.due)}`),as&&h(Av,{user:as,s:14}))),
+          h(Bdg,{t:t.status,cfg:TCFG}))}),
+      aH&&h('div',{className:"card",style:{padding:18,gridColumn:"1 / -1"}},
+        h('div',{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}},h('span',{style:{fontWeight:700,fontSize:13}},"Active Handover"),h(Bdg,{t:aH.status,cfg:HCFG})),
+        h('div',{style:{display:"flex",alignItems:"center",gap:9,marginBottom:12}},h('div',{style:{flex:1,height:6,background:"var(--bg3)",borderRadius:3,overflow:"hidden"}},h('div',{style:{width:`${aH.pct}%`,height:"100%",background:"var(--green)",borderRadius:3}})),h('span',{style:{fontSize:12,fontFamily:"var(--fm)",color:"var(--green)",fontWeight:700}},`${aH.pct}%`)),
+        aH.notes&&h('div',{style:{fontSize:13,color:"var(--text2)",background:"var(--bg2)",borderRadius:7,padding:"9px 11px",border:"1px solid var(--border)"}},aH.notes))),
+    showE&&h(AcctForm,{acct:a,onClose:()=>setSE(false)}),
+    showT&&h(TaskForm,{acctId:id,onClose:()=>setST(false)}),
+    del&&h(Modal,{title:"Delete Account",onClose:()=>setDel(false)},h('p',{style:{color:"var(--text2)",marginBottom:18}},`Delete ${a.name}? Cannot be undone.`),h('div',{style:{display:"flex",gap:9,justifyContent:"flex-end"}},h('button',{className:"btn bs",onClick:()=>setDel(false)},"Cancel"),h('button',{className:"btn bd",onClick:doD},"Delete"))));
+}
+
+// ── Forms ─────────────────────────────────────────────────────────────────────
+function AcctForm({acct,onClose}){
+  const{accounts,users,session,setAccounts}=useCtx();
+  const[f,setF]=useState({name:acct?.name||"",pid:acct?.pid||"",url:acct?.url||"",sub:acct?.sub||"STARTER",pri:acct?.pri||"MEDIUM",amc:acct?.amc||"ACTIVE",mrr:acct?.mrr||0,status:acct?.status||"HEALTHY",owner:acct?.owner||session.id,shadow:acct?.shadow||"",notes:acct?.notes||""});
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const save=()=>{if(!f.name||!f.pid)return;acct?setAccounts(p=>p.map(a=>a.id===acct.id?{...a,...f,mrr:Number(f.mrr)}:a)):setAccounts(p=>[...p,{...f,id:uid(),mrr:Number(f.mrr),created:new Date().toISOString().slice(0,10)}]);onClose()};
+  const tl=users.filter(u=>["ADMIN","TEAM_LEAD"].includes(u.role));
+  return h(Modal,{title:acct?"Edit Account":"New Account",onClose,wide:true},
+    h('div',{style:{display:"flex",flexDirection:"column",gap:13}},
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Client Name *"),h('input',{value:f.name,onChange:e=>s("name",e.target.value),placeholder:"Acme Corp"})),h('div',{className:"field"},h('label',null,"Portal ID *"),h('input',{value:f.pid,onChange:e=>s("pid",e.target.value),placeholder:"HS-12345"}))),
+      h('div',{className:"field"},h('label',null,"Website URL"),h('input',{value:f.url,onChange:e=>s("url",e.target.value),placeholder:"client.com"})),
+      h('div',{className:"g3"},
+        h('div',{className:"field"},h('label',null,"Subscription"),h('select',{value:f.sub,onChange:e=>s("sub",e.target.value)},...["STARTER","PROFESSIONAL","ENTERPRISE"].map(v=>h('option',{key:v},v)))),
+        h('div',{className:"field"},h('label',null,"Status"),h('select',{value:f.status,onChange:e=>s("status",e.target.value)},...Object.entries(SCFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),
+        h('div',{className:"field"},h('label',null,"Priority"),h('select',{value:f.pri,onChange:e=>s("pri",e.target.value)},...Object.entries(PCFG).map(([k,v])=>h('option',{key:k,value:k},v.l))))),
+      h('div',{className:"g3"},
+        h('div',{className:"field"},h('label',null,"AMC Status"),h('select',{value:f.amc,onChange:e=>s("amc",e.target.value)},...Object.entries(ACFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),
+        h('div',{className:"field"},h('label',null,"Monthly Value ($)"),h('input',{type:"number",value:f.mrr,onChange:e=>s("mrr",e.target.value)})),
+        h('div',{className:"field"},h('label',null,"Owner"),h('select',{value:f.owner,onChange:e=>s("owner",e.target.value)},...tl.map(u=>h('option',{key:u.id,value:u.id},u.name))))),
+      h('div',{className:"field"},h('label',null,"Shadow"),h('select',{value:f.shadow,onChange:e=>s("shadow",e.target.value)},h('option',{value:""},"None"),...users.map(u=>h('option',{key:u.id,value:u.id},u.name)))),
+      h('div',{className:"field"},h('label',null,"Notes"),h('textarea',{value:f.notes,onChange:e=>s("notes",e.target.value),rows:2,placeholder:"Internal notes…"})),
+      h('div',{style:{display:"flex",gap:9,justifyContent:"flex-end",paddingTop:3}},h('button',{className:"btn bs",onClick:onClose},"Cancel"),h('button',{className:"btn bp",onClick:save},acct?"Save Changes":"Create Account"))));
+}
+
+function TaskForm({acctId,task,onClose}){
+  const{accounts,users,session,setTasks}=useCtx();
+  const[f,setF]=useState({title:task?.title||"",pri:task?.pri||"MEDIUM",status:task?.status||"TODO",assignee:task?.assignee||session.id,due:task?.due||"",acctId:acctId||task?.acctId||accounts[0]?.id||""});
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const save=()=>{if(!f.title)return;task?setTasks(p=>p.map(t=>t.id===task.id?{...t,...f}:t)):setTasks(p=>[...p,{...f,id:uid()}]);onClose()};
+  return h(Modal,{title:task?"Edit Task":"New Task",onClose},
+    h('div',{style:{display:"flex",flexDirection:"column",gap:13}},
+      !acctId&&h('div',{className:"field"},h('label',null,"Account"),h('select',{value:f.acctId,onChange:e=>s("acctId",e.target.value)},...accounts.map(a=>h('option',{key:a.id,value:a.id},a.name)))),
+      h('div',{className:"field"},h('label',null,"Task Title *"),h('input',{value:f.title,onChange:e=>s("title",e.target.value),placeholder:"What needs to be done?"})),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Priority"),h('select',{value:f.pri,onChange:e=>s("pri",e.target.value)},...Object.entries(PCFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),h('div',{className:"field"},h('label',null,"Status"),h('select',{value:f.status,onChange:e=>s("status",e.target.value)},...Object.entries(TCFG).map(([k,v])=>h('option',{key:k,value:k},v.l))))),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Assignee"),h('select',{value:f.assignee,onChange:e=>s("assignee",e.target.value)},...users.map(u=>h('option',{key:u.id,value:u.id},u.name)))),h('div',{className:"field"},h('label',null,"Due Date"),h('input',{type:"date",value:f.due,onChange:e=>s("due",e.target.value)}))),
+      h('div',{style:{display:"flex",gap:9,justifyContent:"flex-end"}},h('button',{className:"btn bs",onClick:onClose},"Cancel"),h('button',{className:"btn bp",onClick:save},task?"Save":"Create Task"))));
+}
+
+// ── Handovers ─────────────────────────────────────────────────────────────────
+function Handovers(){
+  const{handovers,accounts,users,session,setHandovers}=useCtx();
+  const[show,setShow]=useState(false);const[edit,setEdit]=useState(null);
+  const canM=["ADMIN","TEAM_LEAD"].includes(session.role);
+  const vis=session.role==="ADMIN"?handovers:handovers.filter(hh=>{const a=accounts.find(x=>x.id===hh.acctId);return a&&(a.owner===session.id||hh.to===session.id)});
+  const adj=(id,d)=>setHandovers(p=>p.map(hh=>hh.id===id?{...hh,pct:Math.max(0,Math.min(100,hh.pct+d))}:hh));
+  return h('div',{style:{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}},
+    h('div',{style:{padding:"18px 26px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10}},
+      h('div',null,h('h1',{style:{fontFamily:"var(--fd)",fontSize:18,fontWeight:800}},"Handovers"),h('p',{style:{color:"var(--text2)",fontSize:12}},"Track account transition progress")),
+      h('div',{style:{flex:1}}),
+      canM&&h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:13}),"New Handover")),
+    h('div',{style:{flex:1,overflowY:"auto",padding:24}},
+      vis.length===0&&h(Empty,{icon:"arr",title:"No handovers",msg:"Create a handover to track transitions.",action:canM&&h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:12}),"New")}),
+      h('div',{style:{display:"flex",flexDirection:"column",gap:13}},...vis.map(hh=>{const ac=accounts.find(a=>a.id===hh.acctId);const fr=users.find(u=>u.id===hh.from);const to=users.find(u=>u.id===hh.to);return h('div',{key:hh.id,className:"card",style:{padding:18}},
+        h('div',{style:{display:"flex",alignItems:"flex-start",gap:14,marginBottom:13}},
+          h('div',{style:{flex:1}},h('div',{style:{display:"flex",alignItems:"center",gap:9,marginBottom:3}},h('span',{style:{fontWeight:700,fontSize:14}},ac?.name||"Unknown"),h(Bdg,{t:hh.status,cfg:HCFG})),h('div',{style:{fontSize:12,color:"var(--text3)"}},`Reason: ${hh.reason} · Due ${fmtD(hh.due)}`)),
+          canM&&h('button',{className:"btn bs bsm",onClick:()=>setEdit(hh)},h(Ic,{n:"edit",s:12}),"Edit")),
+        h('div',{style:{display:"flex",alignItems:"center",gap:9,marginBottom:13}},
+          canM&&h('button',{onClick:()=>adj(hh.id,-10),style:{width:24,height:24,borderRadius:5,border:"1px solid var(--border)",background:"var(--bg3)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text2)"}},"−"),
+          h('div',{style:{flex:1,height:7,background:"var(--bg3)",borderRadius:4,overflow:"hidden"}},h('div',{style:{width:`${hh.pct}%`,height:"100%",background:hh.pct===100?"var(--green)":"var(--amber)",borderRadius:4,transition:"width .3s"}})),
+          canM&&h('button',{onClick:()=>adj(hh.id,10),style:{width:24,height:24,borderRadius:5,border:"1px solid var(--border)",background:"var(--bg3)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text2)"}},"+")),
+        h('span',{style:{fontSize:12,fontFamily:"var(--fm)",fontWeight:700,color:hh.pct===100?"var(--green)":"var(--amber)",display:"block",marginBottom:10}},`${hh.pct}% complete`),
+        h('div',{style:{display:"flex",alignItems:"center",gap:9}},fr&&h(Fragment,null,h(Av,{user:fr,s:22}),h('span',{style:{fontSize:12,color:"var(--text2)"}},fr.name)),h(Ic,{n:"arr",s:13,style:{color:"var(--text3)"}}),to&&h(Fragment,null,h(Av,{user:to,s:22}),h('span',{style:{fontSize:12,color:"var(--text2)"}},to.name))),
+        hh.notes&&h('div',{style:{marginTop:11,fontSize:13,color:"var(--text2)",background:"var(--bg2)",borderRadius:7,padding:"9px 11px",border:"1px solid var(--border)"}},hh.notes))}))),
+    (show||edit)&&h(HForm,{h:edit,onClose:()=>{setShow(false);setEdit(null)}}));
+}
+function HForm({h:hh,onClose}){
+  const{handovers,accounts,users,setHandovers}=useCtx();
+  const[f,setF]=useState({acctId:hh?.acctId||accounts[0]?.id||"",from:hh?.from||users[0]?.id||"",to:hh?.to||users[0]?.id||"",reason:hh?.reason||"",notes:hh?.notes||"",status:hh?.status||"NOT_STARTED",pct:hh?.pct||0,due:hh?.due||""});
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const save=()=>{hh?setHandovers(p=>p.map(x=>x.id===hh.id?{...x,...f}:x)):setHandovers(p=>[...p,{...f,id:uid()}]);onClose()};
+  return h(Modal,{title:hh?"Edit Handover":"New Handover",onClose,wide:true},
+    h('div',{style:{display:"flex",flexDirection:"column",gap:13}},
+      h('div',{className:"field"},h('label',null,"Account"),h('select',{value:f.acctId,onChange:e=>s("acctId",e.target.value)},...accounts.map(a=>h('option',{key:a.id,value:a.id},a.name)))),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"From"),h('select',{value:f.from,onChange:e=>s("from",e.target.value)},...users.map(u=>h('option',{key:u.id,value:u.id},u.name)))),h('div',{className:"field"},h('label',null,"To"),h('select',{value:f.to,onChange:e=>s("to",e.target.value)},...users.map(u=>h('option',{key:u.id,value:u.id},u.name))))),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Status"),h('select',{value:f.status,onChange:e=>s("status",e.target.value)},...Object.entries(HCFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),h('div',{className:"field"},h('label',null,"Progress %"),h('input',{type:"number",min:0,max:100,value:f.pct,onChange:e=>s("pct",Number(e.target.value))}))),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Reason"),h('input',{value:f.reason,onChange:e=>s("reason",e.target.value),placeholder:"e.g. Team restructure"})),h('div',{className:"field"},h('label',null,"Due Date"),h('input',{type:"date",value:f.due,onChange:e=>s("due",e.target.value)}))),
+      h('div',{className:"field"},h('label',null,"Notes"),h('textarea',{value:f.notes,onChange:e=>s("notes",e.target.value),rows:2,placeholder:"Key info for incoming team member…"})),
+      h('div',{style:{display:"flex",gap:9,justifyContent:"flex-end"}},h('button',{className:"btn bs",onClick:onClose},"Cancel"),h('button',{className:"btn bp",onClick:save},hh?"Save":"Create"))));
+}
+
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+function Tasks(){
+  const{tasks,accounts,users,session,setTasks}=useCtx();
+  const[fa,setFa]=useState("ME");const[fs,setFs]=useState("ALL");const[show,setShow]=useState(false);
+  const vis=tasks.filter(t=>{const mA=fa==="ALL"||t.assignee===(fa==="ME"?session.id:fa);const mS=fs==="ALL"||t.status===fs;return(fa==="ALL"?true:mA)&&mS}).sort((a,b)=>{const p={CRITICAL:0,HIGH:1,MEDIUM:2,LOW:3};return(p[a.pri]??9)-(p[b.pri]??9)});
+  const tog=id=>setTasks(p=>p.map(t=>t.id===id?{...t,status:t.status==="DONE"?"TODO":"DONE"}:t));
+  return h('div',{style:{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}},
+    h('div',{style:{padding:"18px 26px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10}},
+      h('div',null,h('h1',{style:{fontFamily:"var(--fd)",fontSize:18,fontWeight:800}},"Tasks"),h('p',{style:{color:"var(--text2)",fontSize:12}},`${tasks.filter(t=>t.status!=="DONE").length} open tasks`)),h('div',{style:{flex:1}}),h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:13}),"New Task")),
+    h('div',{style:{padding:"10px 26px",borderBottom:"1px solid var(--border)",display:"flex",gap:9}},
+      h('select',{value:fa,onChange:e=>setFa(e.target.value),style:{width:"auto",minWidth:140}},h('option',{value:"ALL"},"All Assignees"),h('option',{value:"ME"},"My Tasks"),...users.map(u=>h('option',{key:u.id,value:u.id},u.name))),
+      h('select',{value:fs,onChange:e=>setFs(e.target.value),style:{width:"auto",minWidth:130}},h('option',{value:"ALL"},"All Status"),...Object.entries(TCFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),
+    h('div',{style:{flex:1,overflowY:"auto"}},
+      vis.length===0&&h(Empty,{icon:"check",title:"No tasks",msg:"All caught up!"}),
+      ...vis.map(t=>{const ac=accounts.find(a=>a.id===t.acctId);const as=users.find(u=>u.id===t.assignee);return h('div',{key:t.id,style:{padding:"11px 26px",borderBottom:"1px solid var(--border)",display:"flex",gap:11,alignItems:"center"}},
+        h('button',{onClick:()=>tog(t.id),style:{width:19,height:19,borderRadius:4,border:`1.5px solid ${t.status==="DONE"?"var(--green)":"var(--border2)"}`,background:t.status==="DONE"?"rgba(61,214,140,.1)":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},t.status==="DONE"&&h(Ic,{n:"check",s:11,style:{color:"var(--green)"}})),
+        h('div',{style:{flex:1}},h('div',{style:{fontSize:13,fontWeight:500,textDecoration:t.status==="DONE"?"line-through":"none",color:t.status==="DONE"?"var(--text3)":"var(--text)"}},t.title),h('div',{style:{fontSize:11,color:"var(--text3)",marginTop:1}},`${ac?.name} · Due ${fmtD(t.due)}`)),
+        h('span',{style:{fontSize:11,color:PCFG[t.pri]?.c,fontWeight:600}},PCFG[t.pri]?.l),
+        as&&h('div',{style:{display:"flex",alignItems:"center",gap:5}},h(Av,{user:as,s:20}),h('span',{style:{fontSize:11,color:"var(--text2)"}},as.name.split(" ")[0])),
+        h(Bdg,{t:t.status,cfg:TCFG}))})),
+    show&&h(TaskForm,{onClose:()=>setShow(false)}));
+}
+
+// ── Vacation ──────────────────────────────────────────────────────────────────
+function Vacation(){
+  const{vacations,users,session,setVacations}=useCtx();
+  const[show,setShow]=useState(false);
+  const vis=session.role==="ADMIN"?vacations:vacations.filter(v=>v.userId===session.id);
+  const now=new Date();
+  return h('div',{style:{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}},
+    h('div',{style:{padding:"18px 26px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10}},
+      h('div',null,h('h1',{style:{fontFamily:"var(--fd)",fontSize:18,fontWeight:800}},"Vacation Plans"),h('p',{style:{color:"var(--text2)",fontSize:12}},"Delegate accounts during time off")),h('div',{style:{flex:1}}),h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:13}),"New Plan")),
+    h('div',{style:{flex:1,overflowY:"auto",padding:24}},
+      vis.length===0&&h(Empty,{icon:"umb",title:"No vacation plans",msg:"Plan ahead by delegating accounts.",action:h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:12}),"New Plan")}),
+      h('div',{style:{display:"flex",flexDirection:"column",gap:13}},...vis.map(v=>{const vu=users.find(u=>u.id===v.userId);const cu=users.find(u=>u.id===v.cover);const s=new Date(v.start),e=new Date(v.end);const active=now>=s&&now<=e;const upcoming=now<s;const state=active?"Active":upcoming?"Upcoming":"Past";const sc=active?"var(--green)":upcoming?"var(--amber)":"var(--text3)";return h('div',{key:v.id,className:"card",style:{padding:18,borderLeft:`3px solid ${sc}`}},
+        h('div',{style:{display:"flex",alignItems:"center",gap:12,marginBottom:12}},
+          h('div',{style:{flex:1,display:"flex",alignItems:"center",gap:9}},vu&&h(Av,{user:vu,s:28}),h('div',null,h('div',{style:{fontWeight:700,fontSize:14}},`${vu?.name}'s Vacation`),h('div',{style:{fontSize:11,color:"var(--text3)",fontFamily:"var(--fm)"}},`${fmtD(v.start)} → ${fmtD(v.end)}`))),
+          h('span',{className:"badge",style:{color:sc,background:sc+"18",border:`1px solid ${sc}28`}},state)),
+        cu&&h('div',{style:{display:"flex",alignItems:"center",gap:8,padding:"9px 11px",background:"var(--bg2)",borderRadius:7,border:"1px solid var(--border)"}},h('span',{style:{fontSize:12,color:"var(--text3)"}},"Coverage:"),h(Av,{user:cu,s:22}),h('span',{style:{fontSize:13,fontWeight:600}},cu.name)),
+        v.notes&&h('div',{style:{marginTop:10,fontSize:13,color:"var(--text2)"}},v.notes))}))),
+    show&&h(VForm,{onClose:()=>setShow(false)}));
+}
+function VForm({onClose}){
+  const{users,session,setVacations}=useCtx();
+  const[f,setF]=useState({userId:session.id,start:"",end:"",cover:"",notes:""});
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const save=()=>{if(!f.start||!f.end)return;setVacations(p=>[...p,{...f,id:uid()}]);onClose()};
+  return h(Modal,{title:"New Vacation Plan",onClose},
+    h('div',{style:{display:"flex",flexDirection:"column",gap:13}},
+      session.role==="ADMIN"&&h('div',{className:"field"},h('label',null,"Team Member"),h('select',{value:f.userId,onChange:e=>s("userId",e.target.value)},...users.map(u=>h('option',{key:u.id,value:u.id},u.name)))),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Start Date"),h('input',{type:"date",value:f.start,onChange:e=>s("start",e.target.value)})),h('div',{className:"field"},h('label',null,"End Date"),h('input',{type:"date",value:f.end,onChange:e=>s("end",e.target.value)}))),
+      h('div',{className:"field"},h('label',null,"Cover Person"),h('select',{value:f.cover,onChange:e=>s("cover",e.target.value)},h('option',{value:""},"Select…"),...users.filter(u=>u.id!==f.userId).map(u=>h('option',{key:u.id,value:u.id},u.name)))),
+      h('div',{className:"field"},h('label',null,"Notes"),h('textarea',{value:f.notes,onChange:e=>s("notes",e.target.value),rows:2,placeholder:"Handover notes…"})),
+      h('div',{style:{display:"flex",gap:9,justifyContent:"flex-end"}},h('button',{className:"btn bs",onClick:onClose},"Cancel"),h('button',{className:"btn bp",onClick:save},"Create Plan"))));
+}
+
+// ── Risks ─────────────────────────────────────────────────────────────────────
+function Risks(){
+  const{accounts,users}=useCtx();
+  const secs=[{t:"At Risk",ic:"alert",c:"var(--red)",items:accounts.filter(a=>a.status==="AT_RISK")},{t:"AMC Renewal Due",ic:"clk",c:"var(--amber)",items:accounts.filter(a=>a.amc==="RENEWAL_DUE")},{t:"No Shadow Assigned",ic:"users",c:"var(--blue)",items:accounts.filter(a=>!a.shadow&&a.status!=="CHURNED")},{t:"Churned",ic:"x",c:"var(--text3)",items:accounts.filter(a=>a.status==="CHURNED")}];
+  return h('div',{style:{height:"100%",overflowY:"auto"}},
+    h('div',{style:{padding:"18px 26px 14px",borderBottom:"1px solid var(--border)"}},h('h1',{style:{fontFamily:"var(--fd)",fontSize:18,fontWeight:800}},"Risk Dashboard"),h('p',{style:{color:"var(--text2)",fontSize:12}},"Admin view — accounts requiring attention")),
+    h('div',{style:{padding:24,display:"grid",gridTemplateColumns:"1fr 1fr",gap:18}},
+      ...secs.map(s=>h('div',{key:s.t,className:"card",style:{overflow:"hidden"}},
+        h('div',{style:{padding:"12px 16px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:9}},h(Ic,{n:s.ic,s:14,style:{color:s.c}}),h('span',{style:{fontWeight:700,fontSize:13}},s.t),h('span',{style:{marginLeft:"auto",fontFamily:"var(--fm)",fontSize:13,color:s.c,fontWeight:700}},s.items.length)),
+        s.items.length===0?h('div',{style:{padding:"13px 16px",color:"var(--text3)",fontSize:13}},"✓ No issues"):h(Fragment,null,...s.items.map(a=>{const ow=users.find(u=>u.id===a.owner);return h('div',{key:a.id,style:{padding:"9px 16px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:9}},h('div',{style:{flex:1}},h('div',{style:{fontSize:13,fontWeight:600}},a.name),h('div',{style:{fontSize:11,color:"var(--text3)",fontFamily:"var(--fm)"}},a.pid)),ow&&h(Av,{user:ow,s:22}),h('span',{style:{fontSize:12,color:"var(--amber)",fontFamily:"var(--fm)"}},fmt(a.mrr)))})))),
+      h('div',{className:"card",style:{padding:18,gridColumn:"1 / -1"}},
+        h('div',{style:{fontWeight:700,fontSize:13,marginBottom:14}},"MRR by Owner"),
+        ...users.filter(u=>["ADMIN","TEAM_LEAD"].includes(u.role)).map(u=>{const uA=accounts.filter(a=>a.owner===u.id&&a.status!=="CHURNED");const mrr=uA.reduce((s,a)=>s+Number(a.mrr),0);const max=Math.max(...users.map(u=>accounts.filter(a=>a.owner===u.id&&a.status!=="CHURNED").reduce((s,a)=>s+Number(a.mrr),0)),1);return h('div',{key:u.id,style:{display:"flex",alignItems:"center",gap:11,marginBottom:9}},h(Av,{user:u,s:24}),h('span',{style:{width:100,fontSize:12,color:"var(--text2)"}},u.name.split(" ")[0]),h('div',{style:{flex:1,height:5,background:"var(--bg3)",borderRadius:3}},h('div',{style:{width:`${(mrr/max)*100}%`,height:"100%",background:u.clr,borderRadius:3}})),h('span',{style:{fontFamily:"var(--fm)",fontSize:12,fontWeight:700,color:"var(--green)",minWidth:65,textAlign:"right"}},fmt(mrr)),h('span',{style:{fontSize:11,color:"var(--text3)",minWidth:55}},`${uA.length} accts`))}))));
+}
+
+// ── Team ──────────────────────────────────────────────────────────────────────
+function Team(){
+  const{users,accounts,session,setUsers}=useCtx();
+  const[show,setShow]=useState(false);
+  return h('div',{style:{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}},
+    h('div',{style:{padding:"18px 26px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10}},
+      h('div',null,h('h1',{style:{fontFamily:"var(--fd)",fontSize:18,fontWeight:800}},"Team"),h('p',{style:{color:"var(--text2)",fontSize:12}},`${users.length} members`)),h('div',{style:{flex:1}}),
+      session.role==="ADMIN"&&h('button',{className:"btn bp bsm",onClick:()=>setShow(true)},h(Ic,{n:"plus",s:13}),"Add Member")),
+    h('div',{style:{flex:1,overflowY:"auto",padding:22}},
+      h('div',{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}},
+        ...users.map(u=>{const uA=accounts.filter(a=>a.owner===u.id&&a.status!=="CHURNED");const mrr=uA.reduce((s,a)=>s+Number(a.mrr),0);return h('div',{key:u.id,className:"card",style:{padding:18}},
+          h('div',{style:{display:"flex",alignItems:"center",gap:12,marginBottom:13}},h(Av,{user:u,s:42}),h('div',null,h('div',{style:{fontWeight:700,fontSize:14}},u.name),h('div',{style:{fontSize:11,color:"var(--text3)",marginBottom:4}},u.email),h(Bdg,{t:u.role,cfg:RCFG}))),
+          h('div',{className:"g2",style:{background:"var(--bg2)",borderRadius:7,padding:"10px 11px",border:"1px solid var(--border)"}},
+            h('div',null,h('div',{className:"lbl",style:{marginBottom:2}},"Accounts"),h('div',{style:{fontFamily:"var(--fd)",fontWeight:800,fontSize:20,color:u.clr}},uA.length)),
+            h('div',null,h('div',{className:"lbl",style:{marginBottom:2}},"MRR"),h('div',{style:{fontFamily:"var(--fd)",fontWeight:800,fontSize:20,color:"var(--green)"}},fmt(mrr)))))}))),
+    show&&h(UForm,{onClose:()=>setShow(false)}));
+}
+function UForm({onClose}){
+  const{users,setUsers}=useCtx();
+  const[f,setF]=useState({name:"",email:"",pwd:"password123",role:"DEVELOPER"});
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const save=()=>{if(!f.name||!f.email)return;const ini=f.name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();const clrs=["#f0a030","#60a8f0","#3dd68c","#a880f0","#f06060"];const clr=clrs[users.length%clrs.length];setUsers(p=>[...p,{...f,id:uid(),ini,clr}]);onClose()};
+  return h(Modal,{title:"Add Team Member",onClose},
+    h('div',{style:{display:"flex",flexDirection:"column",gap:13}},
+      h('div',{className:"field"},h('label',null,"Full Name"),h('input',{value:f.name,onChange:e=>s("name",e.target.value),placeholder:"Jane Smith"})),
+      h('div',{className:"field"},h('label',null,"Email"),h('input',{type:"email",value:f.email,onChange:e=>s("email",e.target.value),placeholder:"jane@agency.com"})),
+      h('div',{className:"g2"},h('div',{className:"field"},h('label',null,"Role"),h('select',{value:f.role,onChange:e=>s("role",e.target.value)},...Object.entries(RCFG).map(([k,v])=>h('option',{key:k,value:k},v.l)))),h('div',{className:"field"},h('label',null,"Password"),h('input',{value:f.pwd,onChange:e=>s("pwd",e.target.value)}))),
+      h('div',{style:{display:"flex",gap:9,justifyContent:"flex-end"}},h('button',{className:"btn bs",onClick:onClose},"Cancel"),h('button',{className:"btn bp",onClick:save},"Add Member"))));
+}
+
+// ── App Root ──────────────────────────────────────────────────────────────────
+function App(){
+  const[users,setUsersR]=useState(()=>S.get("nx_users",U0));
+  const[accounts,setAccountsR]=useState(()=>S.get("nx_accounts",A0));
+  const[handovers,setHandoversR]=useState(()=>S.get("nx_handovers",H0));
+  const[tasks,setTasksR]=useState(()=>S.get("nx_tasks",T0));
+  const[vacations,setVacationsR]=useState(()=>S.get("nx_vacations",V0));
+  const[session,setSessionR]=useState(()=>S.get("nx_session",null));
+  const[view,setView]=useState({page:"dash"});
+
+  const mk=(key,setter)=>v=>setter(p=>{const n=typeof v==="function"?v(p):v;S.set(key,n);return n});
+  const setUsers=mk("nx_users",setUsersR);
+  const setAccounts=mk("nx_accounts",setAccountsR);
+  const setHandovers=mk("nx_handovers",setHandoversR);
+  const setTasks=mk("nx_tasks",setTasksR);
+  const setVacations=mk("nx_vacations",setVacationsR);
+
+  const login=u=>{setSessionR(u);S.set("nx_session",u)};
+  const logout=()=>{setSessionR(null);S.set("nx_session",null);setView({page:"dash"})};
+  const cu=users.find(u=>u.id===session?.id)||session;
+
+  const pages={dash:h(Dash),accounts:h(Accounts,{setView}),detail:h(Detail,{id:view.id,setView}),handovers:h(Handovers),tasks:h(Tasks),vacation:h(Vacation),risks:h(Risks),team:h(Team)};
+
+  return h(Ctx.Provider,{value:{users,accounts,handovers,tasks,vacations,session:cu,setUsers,setAccounts,setHandovers,setTasks,setVacations}},
+    h('div',{style:{display:"flex",height:"100vh",overflow:"hidden"}},
+      !cu?h(Login,{onLogin:login}):h(Fragment,null,
+        h(Sidebar,{view,setView,user:cu,onLogout:logout}),
+        h('main',{style:{flex:1,overflow:"hidden",display:"flex",flexDirection:"column",background:"var(--bg)"}},pages[view.page]||pages.dash))));
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
