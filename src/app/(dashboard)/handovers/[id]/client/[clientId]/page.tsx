@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TopBar from '@/components/layout/TopBar';
-import { clientHandovers, packages, clients, members, type ClientHandover, type Integration, type AccessDetail, type KeyContact, type Document } from '@/lib/storage';
+import { clientHandovers, handovers, clients, members, type ClientHandover, type Integration, type AccessDetail, type KeyContact, type Document } from '@/lib/storage';
 import { calcCompletion, ROLE_LABELS } from '@/lib/utils';
 import { ArrowLeft, Save, Plus, Trash2, ExternalLink, Upload, Link2 } from 'lucide-react';
 
@@ -38,7 +38,7 @@ export default function ClientHandoverPage() {
     setH(handover);
     const c = clients.get(handover.clientId);
     setClientName(c?.name || 'Unknown Client');
-    const pkg = packages.get(packageId);
+    const pkg = handovers.get(packageId);
     if (pkg) { const m = members.get(pkg.teamMemberId); if (m) setMemberRole(ROLE_LABELS[m.role]); }
   }, [handoverId, packageId, router]);
 
@@ -116,7 +116,7 @@ export default function ClientHandoverPage() {
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Link href="/handovers" className="hover:text-gray-700">Handovers</Link>
             <span>/</span>
-            <Link href={`/handovers/${packageId}`} className="hover:text-gray-700">Package</Link>
+            <Link href={`/handovers/${packageId}`} className="hover:text-gray-700">Handover</Link>
             <span>/</span>
             <span className="font-medium text-gray-900">{clientName}</span>
           </div>
