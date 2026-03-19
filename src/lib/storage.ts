@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type UserRole = 'ADMIN' | 'PM' | 'INTEGRATION_SPECIALIST' | 'DESIGNER' | 'DEVELOPER' | 'TEAM_LEAD' | 'COPYWRITER' | 'SEO_SPECIALIST' | 'OTHER';
 export type HandoverType = 'LAYOFF' | 'MATERNITY_LEAVE' | 'OTHER' | 'RESIGNATION' | 'SICK_LEAVE' | 'VACATION';
-export type HandoverStatus = 'DRAFT' | 'IN_REVIEW' | 'PM_APPROVED' | 'COMPLETE';
+export type HandoverStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'COMPLETE';
 export type SiteType = 'WordPress' | 'React' | 'Next.js' | 'Shopify' | 'Webflow' | 'Vue' | 'Angular' | 'Laravel' | 'Custom' | 'Other';
 export type HubSpotHub = 'Marketing Hub' | 'Sales Hub' | 'Service Hub' | 'CMS Hub' | 'Operations Hub';
 
@@ -11,95 +11,69 @@ export interface TeamMember {
   id: string; name: string; email: string; role: UserRole;
   department: string; phone?: string; slack?: string; createdAt: string;
 }
-
 export interface Client {
   id: string; name: string; industry: string; website?: string; notes?: string; createdAt: string;
 }
-
 export interface Integration {
   id: string; name: string; type: string; purpose: string;
   accessMethod: string; credentialsLocation: string; notes: string;
 }
-
 export interface AccessDetail {
   id: string; tool: string; url: string; username: string;
   credentialsLocation: string; twoFactorInfo: string; accessLevel: string; notes: string;
 }
-
 export interface KeyContact {
   id: string; name: string; role: string; email: string; phone: string; notes: string;
 }
-
 export interface Document {
   id: string; name: string; type: 'link' | 'file'; url: string;
   fileData?: string; mimeType?: string; notes: string; createdAt: string;
 }
-
 export interface HubSpotDetails {
   portalId: string; portalUrl: string; activeHubs: HubSpotHub[]; tier: string;
   pipelineNames: string; keyWorkflows: string; automations: string;
   reportsDashboards: string; customProperties: string; formsLandingPages: string;
   emailTemplates: string; crmNotes: string;
 }
-
 export interface TechStack {
   siteType: SiteType; siteUrl: string; stagingUrl: string; adminUrl: string;
   repoUrl: string; repoBranch: string; hostingProvider: string; hostingUrl: string;
   phpVersion: string; plugins: string; themeFramework: string;
   deploymentProcess: string; localSetup: string; techNotes: string;
 }
-
 export interface OngoingWork {
   activeProjects: string; openIssues: string; pendingTasks: string;
   criticalDeadlines: string; doNotTouch: string; clientExpectations: string;
   weeklyTasks: string; notes: string;
 }
-
 export interface RoleSpecificDetails {
   pmTool: string; pmUrl: string; meetingCadence: string; reportingSchedule: string;
   stakeholders: string; projectStatus: string; figmaUrl: string;
   brandGuidelinesUrl: string; assetsLocation: string; designNotes: string;
   integrationArchitecture: string; dataFlowNotes: string; webhookDetails: string;
-  apiNotes: string; codeStandards: string; testingNotes: string;
-  buildProcess: string; teamStructure: string; escalationPath: string;
-  decisionAuthority: string;
+  apiNotes: string; codeStandards: string; testingNotes: string; buildProcess: string;
+  teamStructure: string; escalationPath: string; decisionAuthority: string;
 }
-
-export interface PMApproval {
-  approved: boolean;
-  approvedById?: string;
-  approvedAt?: string;
-  notes?: string;
-}
-
 export interface ClientHandover {
-  id: string; handoverPackageId: string; clientId: string;
-  hubspot: HubSpotDetails; techStack: TechStack; integrations: Integration[];
-  accessDetails: AccessDetail[]; contacts: KeyContact[]; documents: Document[];
+  id: string; handoverFileId: string; clientId: string;
+  hubspot: HubSpotDetails; techStack: TechStack;
+  integrations: Integration[]; accessDetails: AccessDetail[];
+  contacts: KeyContact[]; documents: Document[];
   ongoingWork: OngoingWork; roleSpecific: RoleSpecificDetails;
   aiSummary: string; completionPct: number; updatedAt: string;
 }
-
 export interface FirefliesEntry {
   id: string; fileName: string; uploadedAt: string;
   processed: boolean; summary: string; clientId?: string;
 }
-
-export interface Handover {
-  id: string;
-  teamMemberId: string;
-  type: HandoverType;
+export interface HandoverFile {
+  id: string; teamMemberId: string; type: HandoverType;
   status: HandoverStatus;
-  startDate: string;
-  endDate?: string;
-  reason: string;
-  coverPersonId?: string;
-  clientHandoverIds: string[];
+  approvedById?: string; approvedAt?: string; approvalNotes?: string;
+  startDate: string; endDate?: string; reason: string;
+  coverPersonId?: string; clientHandoverIds: string[];
   firefliesTranscripts: FirefliesEntry[];
-  pmApproval: PMApproval;
-  notes: string;
-  createdAt: string;
-  updatedAt: string;
+  notes: string; createdAt: string; updatedAt: string;
 }
 
 export const emptyHubspot = (): HubSpotDetails => ({
@@ -107,31 +81,27 @@ export const emptyHubspot = (): HubSpotDetails => ({
   keyWorkflows: '', automations: '', reportsDashboards: '', customProperties: '',
   formsLandingPages: '', emailTemplates: '', crmNotes: ''
 });
-
 export const emptyTechStack = (): TechStack => ({
-  siteType: 'WordPress', siteUrl: '', stagingUrl: '', adminUrl: '',
-  repoUrl: '', repoBranch: 'main', hostingProvider: '', hostingUrl: '',
-  phpVersion: '', plugins: '', themeFramework: '', deploymentProcess: '',
-  localSetup: '', techNotes: ''
+  siteType: 'WordPress', siteUrl: '', stagingUrl: '', adminUrl: '', repoUrl: '',
+  repoBranch: 'main', hostingProvider: '', hostingUrl: '', phpVersion: '',
+  plugins: '', themeFramework: '', deploymentProcess: '', localSetup: '', techNotes: ''
 });
-
 export const emptyOngoing = (): OngoingWork => ({
   activeProjects: '', openIssues: '', pendingTasks: '', criticalDeadlines: '',
   doNotTouch: '', clientExpectations: '', weeklyTasks: '', notes: ''
 });
-
 export const emptyRoleSpecific = (): RoleSpecificDetails => ({
-  pmTool: '', pmUrl: '', meetingCadence: '', reportingSchedule: '',
-  stakeholders: '', projectStatus: '', figmaUrl: '', brandGuidelinesUrl: '',
-  assetsLocation: '', designNotes: '', integrationArchitecture: '',
-  dataFlowNotes: '', webhookDetails: '', apiNotes: '', codeStandards: '',
-  testingNotes: '', buildProcess: '', teamStructure: '', escalationPath: '',
-  decisionAuthority: ''
+  pmTool: '', pmUrl: '', meetingCadence: '', reportingSchedule: '', stakeholders: '',
+  projectStatus: '', figmaUrl: '', brandGuidelinesUrl: '', assetsLocation: '',
+  designNotes: '', integrationArchitecture: '', dataFlowNotes: '', webhookDetails: '',
+  apiNotes: '', codeStandards: '', testingNotes: '', buildProcess: '', teamStructure: '',
+  escalationPath: '', decisionAuthority: ''
 });
 
 const K = {
   members: 'hh_members', clients: 'hh_clients',
-  handovers: 'hh_handovers', clientHandovers: 'hh_client_handovers', auth: 'hh_auth',
+  files: 'hh_files',   // renamed from packages
+  handovers: 'hh_client_handovers', auth: 'hh_auth',
 };
 
 function read<T>(key: string): T[] {
@@ -149,7 +119,6 @@ const SEED_MEMBERS: TeamMember[] = [
   { id: 'm4', name: 'Lena Müller', email: 'lena@agency.com', role: 'DESIGNER', department: 'Creative', phone: '+971 50 444 4444', slack: '@lena', createdAt: '2024-01-04T00:00:00Z' },
   { id: 'm5', name: 'James Okafor', email: 'james@agency.com', role: 'DEVELOPER', department: 'Tech', phone: '+971 50 555 5555', slack: '@james', createdAt: '2024-01-05T00:00:00Z' },
 ];
-
 const SEED_CLIENTS: Client[] = [
   { id: 'c1', name: 'TechNova Inc', industry: 'SaaS', website: 'https://technova.com', notes: 'Key enterprise client', createdAt: '2024-01-10T00:00:00Z' },
   { id: 'c2', name: 'GreenLeaf Co', industry: 'E-commerce', website: 'https://greenleaf.co', notes: 'WooCommerce store', createdAt: '2024-01-11T00:00:00Z' },
@@ -160,8 +129,8 @@ export function ensureSeedData() {
   if (typeof window === 'undefined') return;
   if (!localStorage.getItem(K.members)) write(K.members, SEED_MEMBERS);
   if (!localStorage.getItem(K.clients)) write(K.clients, SEED_CLIENTS);
+  if (!localStorage.getItem(K.files)) write(K.files, []);
   if (!localStorage.getItem(K.handovers)) write(K.handovers, []);
-  if (!localStorage.getItem(K.clientHandovers)) write(K.clientHandovers, []);
 }
 
 export const auth = {
@@ -201,7 +170,6 @@ export const members = {
   },
   remove: (id: string) => write(K.members, read<TeamMember>(K.members).filter(m => m.id !== id)),
 };
-
 export const clients = {
   all: () => read<Client>(K.clients),
   get: (id: string) => read<Client>(K.clients).find(c => c.id === id) ?? null,
@@ -217,42 +185,40 @@ export const clients = {
   },
   remove: (id: string) => write(K.clients, read<Client>(K.clients).filter(c => c.id !== id)),
 };
-
-export const handovers = {
-  all: () => read<Handover>(K.handovers),
-  get: (id: string) => read<Handover>(K.handovers).find(p => p.id === id) ?? null,
-  create: (d: Omit<Handover, 'id' | 'createdAt' | 'updatedAt'>): Handover => {
-    const list = read<Handover>(K.handovers);
+export const handoverFiles = {
+  all: () => read<HandoverFile>(K.files),
+  get: (id: string) => read<HandoverFile>(K.files).find(p => p.id === id) ?? null,
+  create: (d: Omit<HandoverFile, 'id' | 'createdAt' | 'updatedAt'>): HandoverFile => {
+    const list = read<HandoverFile>(K.files);
     const now = new Date().toISOString();
-    const p: Handover = { ...d, id: uuidv4(), createdAt: now, updatedAt: now };
-    write(K.handovers, [...list, p]); return p;
+    const p: HandoverFile = { ...d, id: uuidv4(), createdAt: now, updatedAt: now };
+    write(K.files, [...list, p]); return p;
   },
-  update: (id: string, d: Partial<Handover>) => {
-    const list = read<Handover>(K.handovers);
+  update: (id: string, d: Partial<HandoverFile>) => {
+    const list = read<HandoverFile>(K.files);
     const i = list.findIndex(p => p.id === id); if (i === -1) return null;
+    list[i] = { ...list[i], ...d, updatedAt: new Date().toISOString() };
+    write(K.files, list); return list[i];
+  },
+  remove: (id: string) => {
+    const f = handoverFiles.get(id);
+    if (f) f.clientHandoverIds.forEach(hid => clientHandovers.remove(hid));
+    write(K.files, read<HandoverFile>(K.files).filter(p => p.id !== id));
+  },
+};
+export const clientHandovers = {
+  all: () => read<ClientHandover>(K.handovers),
+  get: (id: string) => read<ClientHandover>(K.handovers).find(h => h.id === id) ?? null,
+  create: (d: Omit<ClientHandover, 'id' | 'updatedAt'>): ClientHandover => {
+    const list = read<ClientHandover>(K.handovers);
+    const h: ClientHandover = { ...d, id: uuidv4(), updatedAt: new Date().toISOString() };
+    write(K.handovers, [...list, h]); return h;
+  },
+  update: (id: string, d: Partial<ClientHandover>) => {
+    const list = read<ClientHandover>(K.handovers);
+    const i = list.findIndex(h => h.id === id); if (i === -1) return null;
     list[i] = { ...list[i], ...d, updatedAt: new Date().toISOString() };
     write(K.handovers, list); return list[i];
   },
-  remove: (id: string) => {
-    const h = handovers.get(id);
-    if (h) h.clientHandoverIds.forEach(hid => clientHandovers.remove(hid));
-    write(K.handovers, read<Handover>(K.handovers).filter(p => p.id !== id));
-  },
-};
-
-export const clientHandovers = {
-  all: () => read<ClientHandover>(K.clientHandovers),
-  get: (id: string) => read<ClientHandover>(K.clientHandovers).find(h => h.id === id) ?? null,
-  create: (d: Omit<ClientHandover, 'id' | 'updatedAt'>): ClientHandover => {
-    const list = read<ClientHandover>(K.clientHandovers);
-    const h: ClientHandover = { ...d, id: uuidv4(), updatedAt: new Date().toISOString() };
-    write(K.clientHandovers, [...list, h]); return h;
-  },
-  update: (id: string, d: Partial<ClientHandover>) => {
-    const list = read<ClientHandover>(K.clientHandovers);
-    const i = list.findIndex(h => h.id === id); if (i === -1) return null;
-    list[i] = { ...list[i], ...d, updatedAt: new Date().toISOString() };
-    write(K.clientHandovers, list); return list[i];
-  },
-  remove: (id: string) => write(K.clientHandovers, read<ClientHandover>(K.clientHandovers).filter(h => h.id !== id)),
+  remove: (id: string) => write(K.handovers, read<ClientHandover>(K.handovers).filter(h => h.id !== id)),
 };

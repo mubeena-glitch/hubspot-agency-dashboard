@@ -1,13 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ClipboardList, LayoutDashboard, FolderOpen, Users, Building2, Settings, LogOut } from 'lucide-react';
+import { ClipboardList, LayoutDashboard, FileText, Users, Building2, Settings, LogOut } from 'lucide-react';
 import { auth } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 
 const NAV = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/handovers', label: 'Handovers', icon: FolderOpen },
+  { href: '/handovers', label: 'Handover Files', icon: FileText },
   { href: '/team', label: 'Team Members', icon: Users },
   { href: '/clients', label: 'Clients', icon: Building2 },
   { href: '/admin', label: 'Admin', icon: Settings },
@@ -16,7 +16,6 @@ const NAV = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-
   const handleLogout = () => { auth.logout(); router.push('/auth/signin'); };
 
   return (
@@ -32,7 +31,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-
       <nav className="flex-1 p-3 space-y-0.5">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -45,7 +43,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
       <div className="p-3 border-t border-slate-800">
         <button onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">

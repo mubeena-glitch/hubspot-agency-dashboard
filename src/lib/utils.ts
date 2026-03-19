@@ -14,11 +14,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   COPYWRITER: 'Copywriter', SEO_SPECIALIST: 'SEO Specialist', OTHER: 'Other'
 };
 
-// Alphabetically sorted
-export const HANDOVER_TYPES: HandoverType[] = [
-  'LAYOFF', 'MATERNITY_LEAVE', 'OTHER', 'RESIGNATION', 'SICK_LEAVE', 'VACATION'
-];
-
+// Alphabetical order by label
 export const HANDOVER_TYPE_LABELS: Record<HandoverType, string> = {
   LAYOFF: 'Layoff',
   MATERNITY_LEAVE: 'Maternity / Paternity Leave',
@@ -28,17 +24,22 @@ export const HANDOVER_TYPE_LABELS: Record<HandoverType, string> = {
   VACATION: 'Vacation',
 };
 
+// Alphabetically sorted types for dropdowns
+export const HANDOVER_TYPES_SORTED: HandoverType[] = [
+  'LAYOFF', 'MATERNITY_LEAVE', 'OTHER', 'RESIGNATION', 'SICK_LEAVE', 'VACATION'
+];
+
 export const STATUS_COLORS: Record<HandoverStatus, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
-  IN_REVIEW: 'bg-yellow-100 text-yellow-700',
-  PM_APPROVED: 'bg-blue-100 text-blue-700',
-  COMPLETE: 'bg-green-100 text-green-700',
+  PENDING_APPROVAL: 'bg-yellow-100 text-yellow-800',
+  APPROVED: 'bg-blue-100 text-blue-700',
+  COMPLETE: 'bg-green-100 text-green-800',
 };
 
 export const STATUS_LABELS: Record<HandoverStatus, string> = {
   DRAFT: 'Draft',
-  IN_REVIEW: 'In Review',
-  PM_APPROVED: 'PM Approved',
+  PENDING_APPROVAL: 'Pending Approval',
+  APPROVED: 'Approved',
   COMPLETE: 'Complete',
 };
 

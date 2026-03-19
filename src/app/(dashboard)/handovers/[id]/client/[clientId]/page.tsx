@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TopBar from '@/components/layout/TopBar';
-import { clientHandovers, handovers, clients, members, type ClientHandover, type Integration, type AccessDetail, type KeyContact, type Document } from '@/lib/storage';
+import { clientHandovers, handoverFiles, clients, members, type ClientHandover, type Integration, type AccessDetail, type KeyContact, type Document } from '@/lib/storage';
 import { calcCompletion, ROLE_LABELS } from '@/lib/utils';
 import { ArrowLeft, Save, Plus, Trash2, ExternalLink, Upload, Link2 } from 'lucide-react';
 
@@ -38,7 +38,7 @@ export default function ClientHandoverPage() {
     setH(handover);
     const c = clients.get(handover.clientId);
     setClientName(c?.name || 'Unknown Client');
-    const pkg = handovers.get(packageId);
+    const pkg = handoverFiles.get(packageId);
     if (pkg) { const m = members.get(pkg.teamMemberId); if (m) setMemberRole(ROLE_LABELS[m.role]); }
   }, [handoverId, packageId, router]);
 
