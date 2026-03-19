@@ -165,13 +165,13 @@ Only include fields where you found actual data in the transcript. For clientMat
                 if (ed.hubspot) {
                   updates.hubspot = { ...h.hubspot };
                   Object.entries(ed.hubspot).forEach(([k, v]) => {
-                    if (v && k in updates.hubspot!) (updates.hubspot as Record<string, unknown>)[k] = v;
+                    if (v && k in updates.hubspot!) (updates.hubspot as unknown as Record<string, unknown>)[k] = v;
                   });
                 }
                 if (ed.techStack) {
                   updates.techStack = { ...h.techStack };
                   Object.entries(ed.techStack).forEach(([k, v]) => {
-                    if (v && k in updates.techStack!) (updates.techStack as Record<string, unknown>)[k] = v;
+                    if (v && k in updates.techStack!) (updates.techStack as unknown as Record<string, unknown>)[k] = v;
                   });
                 }
                 if (ed.integrations?.length) updates.integrations = [...h.integrations, ...ed.integrations.filter((i: { name?: string }) => i.name).map((i: Record<string, string>) => ({ ...i, id: Date.now().toString() + Math.random() }))];
@@ -180,13 +180,13 @@ Only include fields where you found actual data in the transcript. For clientMat
                 if (ed.ongoingWork) {
                   updates.ongoingWork = { ...h.ongoingWork };
                   Object.entries(ed.ongoingWork).forEach(([k, v]) => {
-                    if (v && k in updates.ongoingWork!) (updates.ongoingWork as Record<string, unknown>)[k] = v;
+                    if (v && k in updates.ongoingWork!) (updates.ongoingWork as unknown as Record<string, unknown>)[k] = v;
                   });
                 }
                 if (ed.roleSpecific) {
                   updates.roleSpecific = { ...h.roleSpecific };
                   Object.entries(ed.roleSpecific).forEach(([k, v]) => {
-                    if (v && k in updates.roleSpecific!) (updates.roleSpecific as Record<string, unknown>)[k] = v;
+                    if (v && k in updates.roleSpecific!) (updates.roleSpecific as unknown as Record<string, unknown>)[k] = v;
                   });
                 }
                 clientHandovers.update(h.id, updates);
