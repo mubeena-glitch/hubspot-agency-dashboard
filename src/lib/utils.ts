@@ -14,15 +14,27 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   COPYWRITER: 'Copywriter', SEO_SPECIALIST: 'SEO Specialist', OTHER: 'Other'
 };
 
+// Alphabetically sorted
 export const HANDOVER_TYPE_LABELS: Record<HandoverType, string> = {
-  RESIGNATION: 'Resignation', LAYOFF: 'Layoff', MATERNITY_LEAVE: 'Maternity / Paternity Leave',
-  VACATION: 'Vacation', SICK_LEAVE: 'Sick Leave', OTHER: 'Other'
+  LAYOFF: 'Layoff',
+  MATERNITY_LEAVE: 'Maternity / Paternity Leave',
+  OTHER: 'Other',
+  RESIGNATION: 'Resignation',
+  SICK_LEAVE: 'Sick Leave',
+  VACATION: 'Vacation',
 };
+
+// Alphabetical order for dropdown
+export const HANDOVER_TYPES_SORTED: HandoverType[] = [
+  'LAYOFF', 'MATERNITY_LEAVE', 'OTHER', 'RESIGNATION', 'SICK_LEAVE', 'VACATION'
+];
 
 export const STATUS_COLORS: Record<HandoverStatus, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
   IN_REVIEW: 'bg-yellow-100 text-yellow-700',
-  COMPLETE: 'bg-green-100 text-green-700',
+  PENDING_APPROVAL: 'bg-orange-100 text-orange-700',
+  APPROVED: 'bg-green-100 text-green-700',
+  COMPLETE: 'bg-emerald-100 text-emerald-700',
 };
 
 export const TYPE_COLORS: Record<HandoverType, string> = {
@@ -36,7 +48,10 @@ export const TYPE_COLORS: Record<HandoverType, string> = {
 
 export function calcCompletion(h: import('./storage').ClientHandover): number {
   let score = 0; let total = 0;
-  const check = (val: string | string[] | undefined) => { total++; if (val && (typeof val === 'string' ? val.trim().length > 0 : val.length > 0)) score++; };
+  const check = (val: string | string[] | undefined) => {
+    total++;
+    if (val && (typeof val === 'string' ? val.trim().length > 0 : val.length > 0)) score++;
+  };
   check(h.hubspot.portalId); check(h.hubspot.activeHubs);
   check(h.techStack.siteUrl); check(h.techStack.siteType);
   check(h.ongoingWork.activeProjects); check(h.ongoingWork.pendingTasks);

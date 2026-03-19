@@ -23,17 +23,17 @@ export default function DashboardPage() {
       total: all.length,
       draft: all.filter(p => p.status === 'DRAFT').length,
       inReview: all.filter(p => p.status === 'IN_REVIEW').length,
-      complete: all.filter(p => p.status === 'COMPLETE').length,
+      complete: all.filter(p => p.approvalStatus === 'APPROVED').length,
       totalMembers: members.all().length,
       totalClients: clients.all().length,
     });
   }, []);
 
   const STAT_CARDS = [
-    { label: 'Total Packages', value: stats.total, icon: FolderOpen, color: 'bg-indigo-50 text-indigo-600' },
+    { label: 'Total Handovers', value: stats.total, icon: FolderOpen, color: 'bg-indigo-50 text-indigo-600' },
     { label: 'In Draft', value: stats.draft, icon: Clock, color: 'bg-gray-50 text-gray-600' },
     { label: 'In Review', value: stats.inReview, icon: AlertTriangle, color: 'bg-yellow-50 text-yellow-600' },
-    { label: 'Complete', value: stats.complete, icon: CheckCircle2, color: 'bg-green-50 text-green-600' },
+    { label: 'PM Approved', value: stats.complete, icon: CheckCircle2, color: 'bg-green-50 text-green-600' },
     { label: 'Team Members', value: stats.totalMembers, icon: Users, color: 'bg-purple-50 text-purple-600' },
     { label: 'Clients', value: stats.totalClients, icon: Building2, color: 'bg-blue-50 text-blue-600' },
   ];
@@ -55,19 +55,19 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-gray-900">Recent Handover Packages</h2>
+          <h2 className="text-base font-semibold text-gray-900">Recent Handovers</h2>
           <Link href="/handovers/new" className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            <Plus className="w-4 h-4" /> New Handover Package
+            <Plus className="w-4 h-4" /> New Handover
           </Link>
         </div>
 
         {pkgs.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-16 text-center">
             <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="font-medium text-gray-500">No handover packages yet</p>
-            <p className="text-sm text-gray-400 mt-1">Create one when a team member is leaving or going on leave</p>
+            <p className="font-medium text-gray-500">No handovers yet</p>
+            <p className="text-sm text-gray-400 mt-1">Start one when a team member is leaving or going on leave</p>
             <Link href="/handovers/new" className="mt-4 inline-flex items-center gap-1.5 bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg">
-              <Plus className="w-4 h-4" /> Create First Package
+              <Plus className="w-4 h-4" /> Start First Handover
             </Link>
           </div>
         ) : (

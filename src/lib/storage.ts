@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type UserRole = 'ADMIN' | 'PM' | 'INTEGRATION_SPECIALIST' | 'DESIGNER' | 'DEVELOPER' | 'TEAM_LEAD' | 'COPYWRITER' | 'SEO_SPECIALIST' | 'OTHER';
 export type HandoverType = 'RESIGNATION' | 'LAYOFF' | 'MATERNITY_LEAVE' | 'VACATION' | 'SICK_LEAVE' | 'OTHER';
-export type HandoverStatus = 'DRAFT' | 'IN_REVIEW' | 'COMPLETE';
+export type HandoverStatus = 'DRAFT' | 'IN_REVIEW' | 'PENDING_APPROVAL' | 'APPROVED' | 'COMPLETE';
+export type ApprovalStatus = 'NOT_SUBMITTED' | 'PENDING' | 'APPROVED' | 'REJECTED';
 export type SiteType = 'WordPress' | 'React' | 'Next.js' | 'Shopify' | 'Webflow' | 'Vue' | 'Angular' | 'Laravel' | 'Custom' | 'Other';
 export type HubSpotHub = 'Marketing Hub' | 'Sales Hub' | 'Service Hub' | 'CMS Hub' | 'Operations Hub';
 
@@ -170,6 +171,11 @@ export interface HandoverPackage {
   clientHandoverIds: string[];
   firefliesTranscripts: FirefliesEntry[];
   notes: string;
+  approvalStatus: ApprovalStatus;
+  approvedBy?: string;
+  approvedAt?: string;
+  approvalNotes?: string;
+  submittedForApprovalAt?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -21,23 +21,23 @@ export default function HandoversPage() {
   useEffect(reload, []);
 
   const handleDelete = (id: string) => {
-    if (confirm('Delete this handover package and all its documentation?')) { packages.remove(id); reload(); }
+    if (confirm('Delete this handover and all its documentation?')) { packages.remove(id); reload(); }
   };
 
   return (
     <div>
-      <TopBar title="Handover Packages" subtitle="All team member transitions" />
+      <TopBar title="Handovers" subtitle="All team member transitions" />
       <div className="p-6">
         <div className="flex justify-end mb-4">
           <Link href="/handovers/new" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            <Plus className="w-4 h-4" /> New Package
+            <Plus className="w-4 h-4" /> New Handover
           </Link>
         </div>
 
         {pkgs.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-16 text-center">
             <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium">No handover packages yet</p>
+            <p className="text-gray-500 font-medium">No handovers yet</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -61,13 +61,11 @@ export default function HandoversPage() {
                         <span className="text-xs text-gray-400">{formatDate(pkg.createdAt)}</span>
                         {pkg.endDate && <span className="text-xs text-gray-400">→ {formatDate(pkg.endDate)}</span>}
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <div className="w-48 bg-gray-100 rounded-full h-1.5">
-                            <div className="bg-indigo-500 h-1.5 rounded-full transition-all" style={{ width: `${avgCompletion}%` }} />
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">{avgCompletion}% documented · {pkg.clientHandoverIds.length} client{pkg.clientHandoverIds.length !== 1 ? 's' : ''}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-48 bg-gray-100 rounded-full h-1.5">
+                          <div className="bg-indigo-500 h-1.5 rounded-full transition-all" style={{ width: `${avgCompletion}%` }} />
                         </div>
+                        <p className="text-xs text-gray-400">{avgCompletion}% documented · {pkg.clientHandoverIds.length} client{pkg.clientHandoverIds.length !== 1 ? 's' : ''}</p>
                       </div>
                     </Link>
                     <button onClick={() => handleDelete(pkg.id)} className="ml-4 text-gray-300 hover:text-red-500 transition-colors">

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const NAV = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/handovers', label: 'Handover Packages', icon: FolderOpen },
+  { href: '/handovers', label: 'Handovers', icon: FolderOpen },
   { href: '/team', label: 'Team Members', icon: Users },
   { href: '/clients', label: 'Clients', icon: Building2 },
   { href: '/admin', label: 'Admin', icon: Settings },
