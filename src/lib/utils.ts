@@ -36,7 +36,7 @@ export const TYPE_COLORS: Record<HandoverType, string> = {
 
 export function calcCompletion(h: import('./storage').ClientHandover): number {
   let score = 0; let total = 0;
-  const check = (val: string | string[] | undefined) => { total++; if (val && (typeof val === 'string' ? val.trim() : val.length) > 0) score++; };
+  const check = (val: string | string[] | undefined) => { total++; if (val && (typeof val === 'string' ? val.trim().length > 0 : val.length > 0)) score++; };
   check(h.hubspot.portalId); check(h.hubspot.activeHubs);
   check(h.techStack.siteUrl); check(h.techStack.siteType);
   check(h.ongoingWork.activeProjects); check(h.ongoingWork.pendingTasks);
