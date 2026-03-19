@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'HubSpot Agency Dashboard',
-  description: 'Internal agency dashboard for HubSpot account management',
+  title: 'Handover Hub — Agency Handover Management',
+  description: 'Complete handover documentation for agency team transitions',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900 antialiased">{children}</body>
+      <body className="bg-slate-50 text-gray-900 antialiased">{children}</body>
     </html>
   );
 }
