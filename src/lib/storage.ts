@@ -2,7 +2,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export type UserRole = 'ADMIN' | 'PM' | 'INTEGRATION_SPECIALIST' | 'DESIGNER' | 'DEVELOPER' | 'TEAM_LEAD' | 'COPYWRITER' | 'SEO_SPECIALIST' | 'OTHER';
-export type HandoverType = 'LAYOFF' | 'MATERNITY_LEAVE' | 'OTHER' | 'RESIGNATION' | 'SICK_LEAVE' | 'VACATION';
+// Layoff removed
+export type HandoverType = 'MATERNITY_LEAVE' | 'OTHER' | 'RESIGNATION' | 'SICK_LEAVE' | 'VACATION';
 export type HandoverStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'COMPLETE';
 export type SiteType = 'WordPress' | 'React' | 'Next.js' | 'Shopify' | 'Webflow' | 'Vue' | 'Angular' | 'Laravel' | 'Custom' | 'Other';
 export type HubSpotHub = 'Marketing Hub' | 'Sales Hub' | 'Service Hub' | 'CMS Hub' | 'Operations Hub';
@@ -12,7 +13,8 @@ export interface TeamMember {
   department: string; phone?: string; slack?: string; createdAt: string;
 }
 export interface Client {
-  id: string; name: string; industry: string; website?: string; notes?: string; createdAt: string;
+  id: string; name: string; industry: string; website?: string; notes?: string;
+  createdAt: string; createdById?: string;
 }
 export interface Integration {
   id: string; name: string; type: string; purpose: string;
@@ -100,8 +102,7 @@ export const emptyRoleSpecific = (): RoleSpecificDetails => ({
 
 const K = {
   members: 'hh_members', clients: 'hh_clients',
-  files: 'hh_files',   // renamed from packages
-  handovers: 'hh_client_handovers', auth: 'hh_auth',
+  files: 'hh_files', handovers: 'hh_client_handovers', auth: 'hh_auth',
 };
 
 function read<T>(key: string): T[] {
@@ -170,6 +171,7 @@ export const members = {
   },
   remove: (id: string) => write(K.members, read<TeamMember>(K.members).filter(m => m.id !== id)),
 };
+
 export const clients = {
   all: () => read<Client>(K.clients),
   get: (id: string) => read<Client>(K.clients).find(c => c.id === id) ?? null,
@@ -185,6 +187,7 @@ export const clients = {
   },
   remove: (id: string) => write(K.clients, read<Client>(K.clients).filter(c => c.id !== id)),
 };
+
 export const handoverFiles = {
   all: () => read<HandoverFile>(K.files),
   get: (id: string) => read<HandoverFile>(K.files).find(p => p.id === id) ?? null,
@@ -206,6 +209,7 @@ export const handoverFiles = {
     write(K.files, read<HandoverFile>(K.files).filter(p => p.id !== id));
   },
 };
+
 export const clientHandovers = {
   all: () => read<ClientHandover>(K.handovers),
   get: (id: string) => read<ClientHandover>(K.handovers).find(h => h.id === id) ?? null,

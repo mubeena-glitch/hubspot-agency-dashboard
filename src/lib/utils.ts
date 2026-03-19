@@ -14,9 +14,8 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   COPYWRITER: 'Copywriter', SEO_SPECIALIST: 'SEO Specialist', OTHER: 'Other'
 };
 
-// Alphabetical order by label
+// Alphabetical, no Layoff
 export const HANDOVER_TYPE_LABELS: Record<HandoverType, string> = {
-  LAYOFF: 'Layoff',
   MATERNITY_LEAVE: 'Maternity / Paternity Leave',
   OTHER: 'Other',
   RESIGNATION: 'Resignation',
@@ -24,15 +23,14 @@ export const HANDOVER_TYPE_LABELS: Record<HandoverType, string> = {
   VACATION: 'Vacation',
 };
 
-// Alphabetically sorted types for dropdowns
 export const HANDOVER_TYPES_SORTED: HandoverType[] = [
-  'LAYOFF', 'MATERNITY_LEAVE', 'OTHER', 'RESIGNATION', 'SICK_LEAVE', 'VACATION'
+  'MATERNITY_LEAVE', 'OTHER', 'RESIGNATION', 'SICK_LEAVE', 'VACATION'
 ];
 
 export const STATUS_COLORS: Record<HandoverStatus, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
   PENDING_APPROVAL: 'bg-yellow-100 text-yellow-800',
-  APPROVED: 'bg-blue-100 text-blue-700',
+  APPROVED: 'bg-purple-100 text-purple-800',
   COMPLETE: 'bg-green-100 text-green-800',
 };
 
@@ -45,7 +43,6 @@ export const STATUS_LABELS: Record<HandoverStatus, string> = {
 
 export const TYPE_COLORS: Record<HandoverType, string> = {
   RESIGNATION: 'bg-red-100 text-red-700',
-  LAYOFF: 'bg-red-100 text-red-700',
   MATERNITY_LEAVE: 'bg-purple-100 text-purple-700',
   VACATION: 'bg-blue-100 text-blue-700',
   SICK_LEAVE: 'bg-orange-100 text-orange-700',
@@ -65,4 +62,8 @@ export function calcCompletion(h: import('./storage').ClientHandover): number {
   if (h.accessDetails.length > 0) { score++; } total++;
   if (h.contacts.length > 0) { score++; } total++;
   return Math.round((score / total) * 100);
+}
+
+export function isAdmin(role: UserRole): boolean {
+  return role === 'ADMIN';
 }
