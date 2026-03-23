@@ -115,10 +115,13 @@ function write<T>(key: string, data: T[]) {
 
 const SEED_MEMBERS: TeamMember[] = [
   { id: 'm1', name: 'Mubeena', email: 'mubeena@digitalnexa.com', role: 'ADMIN', department: 'Management', phone: '', slack: '@mubeena', createdAt: '2024-01-01T00:00:00Z' },
-  { id: 'm2', name: 'Marcus Lee', email: 'marcus@digitalnexa.com', role: 'INTEGRATION_SPECIALIST', department: 'Tech', phone: '', slack: '@marcus', createdAt: '2024-01-02T00:00:00Z' },
-  { id: 'm3', name: 'Priya Patel', email: 'priya@digitalnexa.com', role: 'PM', department: 'Projects', phone: '', slack: '@priya', createdAt: '2024-01-03T00:00:00Z' },
-  { id: 'm4', name: 'Lena Müller', email: 'lena@digitalnexa.com', role: 'DESIGNER', department: 'Creative', phone: '', slack: '@lena', createdAt: '2024-01-04T00:00:00Z' },
-  { id: 'm5', name: 'James Okafor', email: 'james@digitalnexa.com', role: 'DEVELOPER', department: 'Tech', phone: '', slack: '@james', createdAt: '2024-01-05T00:00:00Z' },
+  { id: 'm2', name: 'Abdel Menam', email: 'abdel@digitalnexa.com', role: 'DEVELOPER', department: 'Tech', phone: '', slack: '@abdel', createdAt: '2024-01-02T00:00:00Z' },
+  { id: 'm3', name: 'Aman Goyal', email: 'aman@digitalnexa.com', role: 'INTEGRATION_SPECIALIST', department: 'Tech', phone: '', slack: '@aman', createdAt: '2024-01-03T00:00:00Z' },
+  { id: 'm4', name: 'Harish Kumar', email: 'harish@digitalnexa.com', role: 'INTEGRATION_SPECIALIST', department: 'Tech', phone: '', slack: '@harish', createdAt: '2024-01-04T00:00:00Z' },
+  { id: 'm5', name: 'Mohammad Saiful Alam', email: 'saiful@digitalnexa.com', role: 'DEVELOPER', department: 'Tech', phone: '', slack: '@saiful', createdAt: '2024-01-05T00:00:00Z' },
+  { id: 'm6', name: 'Muneer Panangadan', email: 'muneer@digitalnexa.com', role: 'DEVELOPER', department: 'Tech', phone: '', slack: '@muneer', createdAt: '2024-01-06T00:00:00Z' },
+  { id: 'm7', name: 'Shemole Ahmed', email: 'shemole@digitalnexa.com', role: 'DESIGNER', department: 'Creative', phone: '', slack: '@shemole', createdAt: '2024-01-07T00:00:00Z' },
+  { id: 'm8', name: 'Talha Rajput', email: 'talha@digitalnexa.com', role: 'DESIGNER', department: 'Creative', phone: '', slack: '@talha', createdAt: '2024-01-08T00:00:00Z' },
 ];
 const SEED_CLIENTS: Client[] = [
   { id: 'c1', name: 'TechNova Inc', industry: 'SaaS', website: 'https://technova.com', notes: 'Key enterprise client', createdAt: '2024-01-10T00:00:00Z' },
