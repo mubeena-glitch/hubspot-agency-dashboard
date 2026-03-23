@@ -9,7 +9,7 @@ import {
 } from '@/lib/storage';
 import {
   formatDate, HANDOVER_TYPE_LABELS, STATUS_COLORS, STATUS_LABELS,
-  TYPE_COLORS, ROLE_LABELS, calcCompletion, isAdmin
+  TYPE_COLORS, ROLE_LABELS, calcCompletion
 } from '@/lib/utils';
 import {
   ArrowLeft, Upload, Sparkles, CheckCircle2, Clock, AlertCircle,
@@ -151,7 +151,9 @@ export default function HandoverFilePage() {
   const [activeTab, setActiveTab] = useState<'docs' | 'transcript' | 'summary'>('docs');
   const fileRef = useRef<HTMLInputElement>(null);
   const currentUser = auth.current();
-  const userIsAdmin = currentUser ? isAdmin(currentUser.role) : false;
+  // Only Mubeena (Admin) can approve — all other team members submit to her
+  const userIsAdmin = currentUser?.role === 'ADMIN';
+  const isCurrentUserTheOwner = file ? currentUser?.id === file.teamMemberId : false;
 
   const reload = useCallback(() => {
     const f = handoverFiles.get(id);
@@ -305,17 +307,24 @@ export default function HandoverFilePage() {
             )}
 
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Submit for Approval — solid prominent button, always visible in DRAFT */}
-              {file.status === 'DRAFT' && (
+              {/* Non-admin: show submit button in header too when DRAFT */}
+              {!userIsAdmin && file.status === 'DRAFT' && (
                 <button
                   onClick={() => {
                     handoverFiles.update(id, { status: 'PENDING_APPROVAL' });
                     reload();
                   }}
-                  className="flex items-center gap-2 text-base font-bold px-6 py-3 rounded-xl shadow-md transition-all hover:opacity-90 active:scale-95"
-                  style={{ background: 'linear-gradient(135deg, #7C3AED, #9354FF)', color: '#fff', boxShadow: '0 4px 14px rgba(124,58,237,0.4)' }}>
-                  <Send className="w-5 h-5" /> Submit for Approval
+                  className="flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-xl transition-all hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg, #7C3AED, #9354FF)', color: '#fff', boxShadow: '0 2px 8px rgba(124,58,237,0.35)' }}>
+                  <Send className="w-4 h-4" /> Submit for Approval
                 </button>
+              )}
+              {/* Non-admin: waiting banner when pending */}
+              {!userIsAdmin && file.status === 'PENDING_APPROVAL' && (
+                <span className="text-sm font-medium px-4 py-2 rounded-xl border flex items-center gap-2"
+                  style={{ borderColor: '#E9DDFF', color: '#7C3AED', background: '#FBF8FF' }}>
+                  <Clock className="w-4 h-4" /> Submitted — awaiting approval
+                </span>
               )}
 
               {/* Admin: Approve / Decline */}
@@ -415,6 +424,40 @@ export default function HandoverFilePage() {
                 </Link>
               );
             })}
+
+            {/* Submit for Approval — non-admin only, at the bottom of client documentation */}
+            {!userIsAdmin && file.status === 'DRAFT' && (
+              <div className="mt-6 pt-5 border-t" style={{ borderColor: LIGHT }}>
+                <div className="bg-white rounded-2xl border p-5 flex items-center justify-between" style={{ borderColor: LIGHT }}>
+                  <div>
+                    <p className="font-semibold text-gray-900">Ready to submit?</p>
+                    <p className="text-sm text-gray-500 mt-0.5">Once you submit, Mubeena will be notified to review and approve this handover file.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      handoverFiles.update(id, { status: 'PENDING_APPROVAL' });
+                      reload();
+                    }}
+                    className="flex items-center gap-2 text-base font-bold px-6 py-3 rounded-xl shadow-lg transition-all hover:opacity-90 active:scale-95 shrink-0 ml-4"
+                    style={{ background: 'linear-gradient(135deg, #7C3AED, #9354FF)', color: '#fff', boxShadow: '0 4px 14px rgba(124,58,237,0.4)' }}>
+                    <Send className="w-5 h-5" /> Submit for Approval
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Non-admin: pending banner */}
+            {!userIsAdmin && file.status === 'PENDING_APPROVAL' && (
+              <div className="mt-6 pt-5 border-t" style={{ borderColor: LIGHT }}>
+                <div className="rounded-2xl p-4 flex items-center gap-3" style={{ background: '#FBF8FF', border: `1px solid ${LIGHT}` }}>
+                  <Clock className="w-5 h-5 shrink-0" style={{ color: PURPLE }} />
+                  <div>
+                    <p className="font-semibold" style={{ color: PURPLE }}>Submitted — awaiting Mubeena&apos;s approval</p>
+                    <p className="text-sm text-gray-500">You&apos;ll be notified once it&apos;s reviewed.</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
