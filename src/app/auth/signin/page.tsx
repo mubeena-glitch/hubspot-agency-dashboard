@@ -5,7 +5,7 @@ import { auth, ensureSeedData } from '@/lib/storage';
 
 export default function SignInPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('sarah@agency.com');
+  const [email, setEmail] = useState('mubeena@digitalnexa.com');
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ export default function SignInPage() {
 
           <div className="mt-6 p-4 rounded-xl" style={{ background: '#F5F0FF' }}>
             <p className="text-xs font-semibold text-gray-600 mb-2">Demo accounts — password: <code className="bg-white px-1.5 py-0.5 rounded" style={{ color: '#9354FF' }}>password123</code></p>
-            {['sarah@agency.com (Admin)', 'marcus@agency.com (Integration Specialist)', 'priya@agency.com (PM)', 'lena@agency.com (Designer)', 'james@agency.com (Developer)'].map(a => (
+            {['mubeena@digitalnexa.com (Admin)', 'marcus@digitalnexa.com (Integration Specialist)', 'priya@digitalnexa.com (PM)', 'lena@digitalnexa.com (Designer)', 'james@digitalnexa.com (Developer)'].map(a => (
               <p key={a} className="text-xs text-gray-500 font-mono leading-relaxed">{a}</p>
             ))}
           </div>

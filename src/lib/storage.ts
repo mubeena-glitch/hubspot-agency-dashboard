@@ -114,11 +114,11 @@ function write<T>(key: string, data: T[]) {
 }
 
 const SEED_MEMBERS: TeamMember[] = [
-  { id: 'm1', name: 'Sarah Johnson', email: 'sarah@agency.com', role: 'ADMIN', department: 'Management', phone: '+971 50 111 1111', slack: '@sarah', createdAt: '2024-01-01T00:00:00Z' },
-  { id: 'm2', name: 'Marcus Lee', email: 'marcus@agency.com', role: 'INTEGRATION_SPECIALIST', department: 'Tech', phone: '+971 50 222 2222', slack: '@marcus', createdAt: '2024-01-02T00:00:00Z' },
-  { id: 'm3', name: 'Priya Patel', email: 'priya@agency.com', role: 'PM', department: 'Projects', phone: '+971 50 333 3333', slack: '@priya', createdAt: '2024-01-03T00:00:00Z' },
-  { id: 'm4', name: 'Lena Müller', email: 'lena@agency.com', role: 'DESIGNER', department: 'Creative', phone: '+971 50 444 4444', slack: '@lena', createdAt: '2024-01-04T00:00:00Z' },
-  { id: 'm5', name: 'James Okafor', email: 'james@agency.com', role: 'DEVELOPER', department: 'Tech', phone: '+971 50 555 5555', slack: '@james', createdAt: '2024-01-05T00:00:00Z' },
+  { id: 'm1', name: 'Mubeena', email: 'mubeena@digitalnexa.com', role: 'ADMIN', department: 'Management', phone: '', slack: '@mubeena', createdAt: '2024-01-01T00:00:00Z' },
+  { id: 'm2', name: 'Marcus Lee', email: 'marcus@digitalnexa.com', role: 'INTEGRATION_SPECIALIST', department: 'Tech', phone: '', slack: '@marcus', createdAt: '2024-01-02T00:00:00Z' },
+  { id: 'm3', name: 'Priya Patel', email: 'priya@digitalnexa.com', role: 'PM', department: 'Projects', phone: '', slack: '@priya', createdAt: '2024-01-03T00:00:00Z' },
+  { id: 'm4', name: 'Lena Müller', email: 'lena@digitalnexa.com', role: 'DESIGNER', department: 'Creative', phone: '', slack: '@lena', createdAt: '2024-01-04T00:00:00Z' },
+  { id: 'm5', name: 'James Okafor', email: 'james@digitalnexa.com', role: 'DEVELOPER', department: 'Tech', phone: '', slack: '@james', createdAt: '2024-01-05T00:00:00Z' },
 ];
 const SEED_CLIENTS: Client[] = [
   { id: 'c1', name: 'TechNova Inc', industry: 'SaaS', website: 'https://technova.com', notes: 'Key enterprise client', createdAt: '2024-01-10T00:00:00Z' },
