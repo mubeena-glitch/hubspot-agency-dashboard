@@ -305,16 +305,16 @@ export default function HandoverFilePage() {
             )}
 
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Submit for Approval — always visible and clickable in DRAFT */}
+              {/* Submit for Approval — solid prominent button, always visible in DRAFT */}
               {file.status === 'DRAFT' && (
                 <button
                   onClick={() => {
                     handoverFiles.update(id, { status: 'PENDING_APPROVAL' });
                     reload();
                   }}
-                  className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all"
-                  style={{ background: PURPLE, color: '#fff' }}>
-                  <Send className="w-4 h-4" /> Submit for Approval
+                  className="flex items-center gap-2 text-base font-bold px-6 py-3 rounded-xl shadow-md transition-all hover:opacity-90 active:scale-95"
+                  style={{ background: 'linear-gradient(135deg, #7C3AED, #9354FF)', color: '#fff', boxShadow: '0 4px 14px rgba(124,58,237,0.4)' }}>
+                  <Send className="w-5 h-5" /> Submit for Approval
                 </button>
               )}
 
