@@ -305,16 +305,16 @@ export default function HandoverFilePage() {
             )}
 
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Submit for approval — visible in DRAFT for everyone */}
+              {/* Submit for Approval — always visible and clickable in DRAFT */}
               {file.status === 'DRAFT' && (
-                <button onClick={() => handoverFiles.update(id, { status: 'PENDING_APPROVAL' }) && reload()}
-                  disabled={!canSubmit}
-                  title={!canSubmit ? 'Add at least one client first' : 'Submit this file for admin approval'}
-                  className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl transition-colors border disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ borderColor: PURPLE, color: PURPLE, background: '#FBF8FF' }}
-                  onMouseEnter={e => { if (canSubmit) { (e.target as HTMLElement).style.background = LIGHT; } }}
-                  onMouseLeave={e => { (e.target as HTMLElement).style.background = '#FBF8FF'; }}>
-                  <Send className="w-3.5 h-3.5" /> Submit for Approval
+                <button
+                  onClick={() => {
+                    handoverFiles.update(id, { status: 'PENDING_APPROVAL' });
+                    reload();
+                  }}
+                  className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all"
+                  style={{ background: PURPLE, color: '#fff' }}>
+                  <Send className="w-4 h-4" /> Submit for Approval
                 </button>
               )}
 
